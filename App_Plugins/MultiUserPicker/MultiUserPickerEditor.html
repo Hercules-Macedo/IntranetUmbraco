@@ -1,0 +1,8 @@
+﻿<div ng-controller="multiUserPickerController">
+    <div>
+        <label ng-repeat="usr in Users">
+            <input type="checkbox" ng-model="usr.Selected" ng-click="SyncWithUmbracoModel(Users)" value="{{usr.Id}}" />
+            {{usr.Name}}
+        </label>
+    </div>
+</div>

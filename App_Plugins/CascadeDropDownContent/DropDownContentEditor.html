@@ -1,0 +1,10 @@
+﻿<div ng-controller="DropDownContentController">
+
+    <div class="form-group">
+        <select class="form-control" style="min-width: 66.6%;" ng-model="value" ng-change="Change()">
+            <option value="">SELECIONE</option>
+            <option ng-repeat="item in List" value="{{$index}}" ng-selected="{{ item.Id == model.value.Id }}">{{item.Name | uppercase}}</option>
+        </select>
+    </div>
+    Values: {{ model.value }}
+</div>

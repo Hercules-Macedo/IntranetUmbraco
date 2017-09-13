@@ -1,0 +1,62 @@
+﻿ {
+ //you can define multiple editors   
+    propertyEditors: [      
+        {
+            alias: "CascadeDropDownContent",
+            name: "Cascade DropDown Content",
+            editor: {
+                view: "~/App_Plugins/CascadeDropDownContent/CascadeDropDownContentEditor.html",
+				valueType: "JSON"
+            },
+			prevalues:{
+				fields: [
+					{
+						label: "Id do Conteudo A",
+						description: "Id do Conteudo A para a Listagem.",
+						key: "ConteudoA",
+						view: "number"
+					},
+					{
+						label: "Id do Conteudo B",
+						description: "Id do Conteudo B para a Listagem.",
+						key: "ConteudoB",
+						view: "number"
+					}
+				]
+			}
+        },
+		{
+            alias: "DropDownContent",
+            name: "DropDown Content",
+            editor: {
+                view: "~/App_Plugins/CascadeDropDownContent/DropDownContentEditor.html",
+				valueType: "JSON"
+            },
+			prevalues:{
+				fields: [
+					{
+						label: "Id do Conteudo",
+						description: "Id do Conteudo.",
+						key: "ConteudoId",
+						view: "number"
+					}
+				]
+			}
+        },
+		{
+            alias: "SimpleList",
+            name: "Simple List",
+            editor: {
+                view: "~/App_Plugins/CascadeDropDownContent/SimpleListtEditor.html",
+				valueType: "JSON"
+            }
+        }
+		
+		
+    ]
+    ,
+    //array of files we want to inject into the application on app_start
+    javascript: [
+        '~/App_Plugins/CascadeDropDownContent/CascadeDropDownContent.controller.js'
+    ]
+ }
