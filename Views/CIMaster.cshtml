@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+}
+
+<link href="~/css/sistemas.css" rel="stylesheet" />
+
+<div ng-controller="sescoop.controllers.ci">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <div class="list-group">
+                <div class="list-group-item"><strong>Funções do sistema</strong></div>
+                <a href="/sistemas/minhas-ci/" class="list-group-item @(ViewBag.activeTab == 0 ? "active" :"")">Minhas Lista de CI</a>
+            </div>
+
+            <div>
+                <hr />
+            </div>
+
+            @if (Roles.IsUserInRole("Enviar CI"))
+            {
+                <div class="list-group">
+                    <div class="list-group-item"><strong>Funções administrativas</strong></div>
+                    <a href="/sistemas/minhas-ci/comunicacao/" class="list-group-item @(ViewBag.activeTab == 1 ? "active" :"")">Cadastrar CI</a>
+                </div>
+            }
+        </div>
+        <div class="col-md-9">@RenderBody()</div>
+    </div>
+</div>

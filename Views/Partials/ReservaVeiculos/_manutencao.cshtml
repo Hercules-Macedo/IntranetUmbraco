@@ -1,0 +1,66 @@
+﻿@using Intranet.Models
+@model VeiculoManutencaoVM
+
+@{
+
+        var repoVeiculo = new Intranet.data.Repositories.VeiculosRepository();
+        List<SelectListItem> veiculos = (from item in repoVeiculo.ListarVeiculos()
+                                         select new SelectListItem()
+                                         {
+                                             Value = item.Id.ToString(),
+                                             Text = item.Descricao
+                                         }).ToList();
+
+
+
+        using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaVeiculosSurfaceController>("ManutencaoSalvar", null, new { id = "form-veiculo-manutencao" }))
+        {
+            Html.EnableClientValidation(true);
+            Html.EnableUnobtrusiveJavaScript(true);
+            Html.AntiForgeryToken();
+            Html.ValidationSummary(true);
+
+            <div class="modal fade" id="modalVeiculoManutencao" tabindex="-1" role="dialog" aria-labelledby="modalVeiculoManutencao-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalVeiculoCancelar-label"><i class="fa fa-times-circle" aria-hidden="true"></i> Adicionar Despesa com Manutenção</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="form-group col-md-5">
+                                    @Html.LabelFor(m => m.VeiculoId)
+                                    @Html.DropDownListFor(m => m.VeiculoId, veiculos, "SELECIONE", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.VeiculoId)
+                                </div>
+                                <div class="form-group col-md-7">
+                                    @Html.LabelFor(m => m.Descricao)
+                                    @Html.TextBoxFor(m => m.Descricao, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Descricao)
+                                </div>
+                                <div class="form-group col-md-6">
+                                    @Html.LabelFor(m => m.NotaFical)
+                                    @Html.TextBoxFor(m => m.NotaFical, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.NotaFical)
+                                </div>
+                                <div class="form-group col-md-3">
+                                    @Html.LabelFor(m => m.Valor)
+                                    @Html.TextBoxFor(m => m.Valor, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Valor)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

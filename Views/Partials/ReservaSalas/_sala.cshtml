@@ -1,0 +1,124 @@
+﻿@model Intranet.Models.SalaVM
+
+@{
+    var salas = new Intranet.data.Repositories.SalasRepository().ListarSalas();
+    var roles = ApplicationContext.Current.Services.MemberService.GetAllRoles().Where(x=>x.ToLower().Contains("sala"));
+}
+
+<div class="panel panel-default">
+    <div class="panel-body textRight">
+
+        @if (Model.Id != 0)
+        {
+            using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaSalasSurfaceController>("Excluir", new { Id = Model.Id, pageId = 2431 }))
+            {
+                @Html.HiddenFor(m => m.Id, new { value = "", @class = "form-control" })
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Excluir</button>
+            }
+        }
+        else
+        {
+            <button class="btn btn-primary" onclick="window.location = window.location.href.split('?')[0];">Novo</button>
+        }
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading"> Sala </div>
+    <div class="panel-body">
+
+        @{
+            Html.EnableClientValidation(true);
+            Html.EnableUnobtrusiveJavaScript(true);
+        }
+
+        @using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaSalasSurfaceController>("Salvar"))
+        {
+
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            @Html.HiddenFor(m => m.Id, new { value = "", @class = "form-control" })
+
+            <div class="form-group col-md-12">
+                @Html.LabelFor(m => m.Descricao)
+                @Html.TextBoxFor(m => m.Descricao, new { placeholder = "Descrição da Sala", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Descricao)
+            </div>
+
+            <div class="form-group col-md-4">
+                @Html.LabelFor(m => m.DataCadastro)
+                @Html.TextBoxFor(m => m.DataCadastro, new { placeholder = "Data de Cadastro da Sala", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.DataCadastro)
+            </div>
+
+            <div class="form-group col-md-4">
+                @Html.LabelFor(m => m._storeStatusSala)
+                @Html.DropDownListFor(m => m._storeStatusSala, EnumHelper.GetSelectList(typeof(Intranet.Models.StatusEquipamento)), "Status", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model._storeStatusSala)
+            </div>
+
+            <div class="form-group col-md-4">
+                @Html.LabelFor(m => m.permissao_reserva)
+                @Html.DropDownList("permissao_reserva", new SelectList(roles, Model.permissao_reserva), "SELECIONE", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.permissao_reserva)
+            </div>
+
+            <div class="col-md-12 textRight">
+                <input type="submit" class="btn btn-primary" value="SALVAR" />
+            </div>
+        }
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Lista de salas</div>
+    <div class="panel-body padding0">
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="textCenter">Id</th>
+                    <th>Tipo</th>
+                    <th class="textCenter">Cadastro</th>
+                    <th class="textCenter">Status</th>
+                    <th width="180"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (!salas.Any())
+            {
+                    <tr>
+                        <td colspan="4"> Não há salas cadastrados. </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in salas)
+                    {
+                        <tr>
+                            <td class="textCenter">@item.Id.ToString("000")</td>
+                            <td>@item.Descricao</td>
+                            <td class="textCenter">@item.DataCadastro</td>
+                            <td class="textCenter">@item.StatusSala.ToString()</td>
+
+                            <td class="textCenter">
+                                <button onclick="javascript:window.location = '?Id=@item.Id';" class="btn btn-warning btn-xs">ALTERAR</button>
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    window.onload = function () {
+        $("#Descricao").focus();
+    };
+</script>

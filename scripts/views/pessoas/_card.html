@@ -1,0 +1,46 @@
+﻿<div class='panel panel-default'>
+    
+    <div class="panel-heading">
+        <i class="fa {{iconTitleCardInfo}} marginR10" aria-hidden="true"></i> {{textTitleCardInfo}}
+    </div>
+    <!--  {{ item.dataNascimento | date:"dd  'de' MMMM": 'UTC' }} -->
+    <div class="panel-body body-card">
+        
+        <img src="{{imgCardBack}}" class="img-responsive" />
+        
+        <img src="{{ item.pic }}" class="img-circle card-img-profile">
+        <p class='text-center card-nome'> {{item.nome | cut:true: 25:' ...'}} </p>
+        <ul class='list-group' ng-show="ngShowDetalhes">
+            <li class='list-group-item card-email'> <label class="card-label"> E-MAIL: </label> <span data-toggle="tooltip" data-placement="top" title="{{ item.email }}">{{ item.email | cut:true: 25:' ...' }}</span> </li>
+            <li class='list-group-item card-login'> <label class="card-label"> RAMAL: </label>&nbsp;{{ item.ramal }} </li>
+            <li class='list-group-item card-area'> <label class="card-label"> ÁREA: </label>&nbsp;{{ item.area | uppercase }} </li>
+            <li class='list-group-item card-nucleo'> <label class="card-label"> NÚCLEO: </label>&nbsp;{{ item.nucleo | uppercase}} </li>
+            <li class='list-group-item' ng-show="ngFerias"> <label class="card-label"> FÉRIAS: </label> {{item.feriasDe | date:"dd/MM/yyyy": 'UTC' }} até {{item.feriasAte | date:"dd/MM/yyyy": 'UTC' }} </li>
+            <li class='list-group-item' ng-show="ngAdmissao"> <label class="card-label"> ADMISSÃO: </label> {{item.dataAdmissao | date:"dd/MM/yyyy": 'UTC' }} </li>
+            <li class='list-group-item' ng-show="ngDesligamento"> <label class="card-label"> DESLIGAMENTO: </label> {{item.dataDemissao | date:"dd/MM/yyyy": 'UTC' }} </li>
+            
+        </ul>
+
+        <ul class='list-group' ng-show="item.AreaAntigo">
+            <li class='list-group-item card-login  fontSize70'>
+                <label class="card-label"> DE: </label>
+                - <span data-toggle="tooltip" data-placement="top" title="{{ item.AreaAntigo }}">{{ item.AreaAntigo | uppercase | cut:true: 35:' ...' }}</span> <br/>
+                - <span data-toggle="tooltip" data-placement="top" title="{{ item.NucleoAntigo }}">{{ item.NucleoAntigo | uppercase | cut:true: 35:' ...' }}</span>
+            </li>
+            <li class='list-group-item card-login  fontSize70'>
+                <label class="card-label"> PARA: </label>
+                - <span data-toggle="tooltip" data-placement="top" title="{{ item.AreaNovo }}">{{ item.AreaNovo | uppercase | cut:true: 35:' ...'}}</span> <br />
+                - <span data-toggle="tooltip" data-placement="top" title="{{ item.NucleoNovo }}">{{ item.NucleoNovo | uppercase | cut:true: 35:' ...'}}</span>
+            </li>
+            <li class='list-group-item card-login'> 
+                <label class="card-label"> TRANSFERÊNCIA EM: </label>
+                {{item.DataCadastro | date:"dd/MM/yyyy": 'UTC' }} 
+            </li>
+        </ul>
+
+        <div class="padding10">
+            <button class='btn btn-primary btn-block' ng-click="info(item);">Mais informações</button>
+        </div>
+
+    </div>
+</div>

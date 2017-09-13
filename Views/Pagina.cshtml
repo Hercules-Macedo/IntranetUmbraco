@@ -1,0 +1,50 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+	Layout = "Master.cshtml";
+    var pageTitle = string.IsNullOrWhiteSpace(CurrentPage.titulo) ? CurrentPage.Name : CurrentPage.titulo;    
+	var cols = !CurrentPage.barraLateral ? 9 : 12; 
+}
+
+<div class="col-md-@cols">
+	<div class="row marginR0">
+		<div class="panel panel-default">
+			<div class="panel-body ">
+				@CurrentPage.textBody
+			</div>
+		</div>
+	</div>
+</div>
+
+@if (CurrentPage.barraLateral == false)
+{
+    <div class="col-md-3">
+
+        @{ var itens = Model.Content.Children.OrderByDescending(c => c.Name).ToList(); }
+        @if (itens.Any())
+        {
+
+            <div class="panel panel-default row">
+                <div class="panel-heading">Sessões</div>
+                <div class="panel-body">
+                    <div class="list-group margin0">
+                        @foreach (var item in itens)
+                        {
+                            <a href="@item.Url" class="list-group-item">
+                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                <strong> @(item.GetPropertyValue<string>("titulo")) </strong>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div ng-include="'/scripts/views/pessoas/_pessoasAniversariantes.html'"></div>
+            <div ng-include="'/scripts/views/noticias/_noticiasUltimasLista.html'"></div>
+        </div>
+
+    </div>
+            }
+	
+

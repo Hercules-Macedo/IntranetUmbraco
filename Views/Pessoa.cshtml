@@ -1,0 +1,198 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.Models;
+@using Intranet.data.Repositories.Base;
+@using Newtonsoft.Json;
+@using System.Linq;
+@using Umbraco.Core.Services;
+
+@{
+    Layout = "Master.cshtml";
+    var delay = 100;
+}
+
+
+<div ng-controller="sescoop.controllers.pessoa">
+
+    <div class="textCenter" style="height:330px;" ng-hide="show">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw" style="display: block;margin-left: auto; margin-right: auto;"></i>
+        <span class="sr-only">Loading...</span>
+    </div>
+
+    <div ng-show="show">
+
+        <div class='panel panel-default'>
+            <div class="panel-body">
+                <div class="form-group-sm col-md-3">
+                    <label>Filtro por Nome:</label>
+                    <input type="text" ng-model="searchText.nome" class="form-control" placeholder="Procurar por...">
+                </div>
+                <div class="form-group-sm col-md-3">
+                    <label>Filtro por Ramal:</label>
+                    <input type="text" ng-model="searchText.ramal" class="form-control" placeholder="Procurar por...">
+                </div>
+                <div class="form-group-sm col-md-3">
+                    <label>Filtro por Núcleo:</label>
+                    <input type="text" ng-model="searchText.nucleo" class="form-control" placeholder="Procurar por...">
+                </div>
+                <div class="form-group-sm col-md-3">
+                    <label>Filtro por Área:</label>
+                    <input type="text" ng-model="searchText.area" class="form-control" placeholder="Procurar por...">
+                </div>
+            </div>
+        </div>
+
+        @if (CurrentPage.Id == 1071)
+        {
+            <div ng-init="lista.aniversariantes()" ng-hide="itens">
+                <h3> Não há aniversariantes este mês.</h3>
+            </div>
+
+            <div ng-show="itens">
+                <h4>Existe(m) {{ filtered.length }} colaborador(es).</h4>
+            </div>
+
+            <div class="row marginT20">
+                
+                <div class="col-md-3 {{cssItens}}" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    
+                    <card-usuario-info 
+					text-title-card-info="{{ item.dataNascimento | date:'dd' : 'UTC' }}"
+                        icon-title-card-info="fa-birthday-cake" 
+                        ng-show-detalhes="true"
+                        ng-image-card="~/media/images/blank.jpg">
+                    </card-usuario-info>
+
+                </div>
+
+            </div>
+        }
+
+        <!-- emails-e-ramais -->
+        @if (CurrentPage.Id == 1072)
+        {
+            <div ng-init="lista.emailsRamais()" ng-hide="itens">
+                <h3> Não há colaboradores.</h3>
+            </div>
+
+            <div class="row marginT20">
+                <div class="col-md-3 {{cssItens}}" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    <card-usuario-info 
+                        text-title-card-info="{{item.nome| cut:true: 25:' ...'}}"
+                        icon-title-card-info="fa-phone-square"
+                        ng-show-detalhes="true"
+                        ng-image-card="~/media/images/blank.jpg">
+                    </card-usuario-info>
+                </div>
+            </div>
+            
+        }
+
+        <!-- Brigada de Incendio -->
+        @if (CurrentPage.Id == 1073)
+        {
+            <div ng-init="lista.brigada()" ng-hide="itens">
+                <h3> Não há colaboradores.</h3>
+            </div>
+
+            <div class="row marginT20">
+                <div class="col-md-3 animate-it" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    
+                    <card-usuario-info 
+                        text-title-card-info="{{item.nome| cut:true: 25:' ...'}}"
+                        icon-title-card-info="fa-clock-o"
+                        ng-show-detalhes="true"
+                        ng-image-card="{{ bgPic(item) }}">
+                    </card-usuario-info>
+
+                </div>
+            </div>
+        }
+        <!-- Admissões -->
+        @if (CurrentPage.Id == 1074)
+        {
+            <div ng-init="lista.admissoes()" ng-hide="itens">
+                <h3> Não há novas admissões este mês.</h3>
+            </div>
+           
+            <div class="row marginT20">
+                <div class="col-md-3 animate-it" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    <card-usuario-info 
+                        text-title-card-info="{{item.nome| cut:true: 25:' ...'}}"
+                        icon-title-card-info="fa-clock-o"
+                        ng-show-detalhes="false"
+                        ng-admissao="true"
+                        ng-image-card="~/media/images/blank.jpg">
+                    </card-usuario-info>
+                </div>
+            </div>
+        }
+
+        <!-- Desligamentos -->
+        @if (CurrentPage.Id == 1075)
+        {
+            <div ng-init="lista.desligamentos()" ng-hide="itens">
+                <h3> Não há novas desligamentos este mês.</h3>
+            </div>
+            
+            <div class="row marginT20">
+                <div class="col-md-3 animate-it" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    <card-usuario-info 
+                        text-title-card-info="{{item.nome| cut:true: 25:' ...'}}"
+                        icon-title-card-info="fa-clock-o"
+                        ng-show-detalhes="true"
+                        ng-desligamento="true"
+                        ng-image-card="~/media/images/blank.jpg">
+                    </card-usuario-info>
+                </div>
+            </div>
+        }
+
+        <!-- Consulta de Férias -->
+        @if (CurrentPage.Id == 2227)
+        {
+            <div ng-init="lista.ferias()" ng-hide="itens">
+                <h3> Não há pessoas em férias este mês.</h3>
+            </div>
+            
+            <div class="row marginT20">
+                <div class="col-md-3 animate-it" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    <card-usuario-info 
+                        text-title-card-info="{{item.nome| cut:true: 25:' ...'}}"
+                        icon-title-card-info="fa-clock-o"
+                        ng-show-detalhes="true"
+                        ng-ferias="true"
+                        ng-image-card="~/media/images/blank.jpg">
+                    </card-usuario-info>
+                </div>
+            </div>
+        }
+
+        @if (CurrentPage.Id == 1076)
+        {
+            <div ng-init="lista.transferencias()" ng-hide="itens">
+                <h3> Não há pessoas em transferencia de area este mês.</h3>
+            </div>
+
+            <div class="row marginT20">
+                <div class="col-md-3 animate-it" ng-repeat="item in filtered = (itens | filter:searchText)" on-finish-render="onRepeatFinish()" data-delay="{{ $index * @delay }}">
+                    <card-usuario-info 
+                        text-title-card-info="{{item.nome| cut:true: 25:' ...'}}"
+                        icon-title-card-info="fa-exchange"
+                        ng-image-card="~/media/images/blank.jpg">
+                    </card-usuario-info>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div ng-hide="(filtered && itens.length)" class="col-md-12">
+        Não foram encontrados resultados para os filtros:
+        Nome: '{{searchText.nome}}',
+        Ramal: '{{searchText.ramal}}',
+        Núcleo: '{{searchText.nucleo}}',
+        Área: '{{searchText.nome}}'
+    </div>
+
+    <div modal-show modal-name="modal-detalhes-pessoas" modal-visible="false"></div>
+
+</div>

@@ -1,0 +1,39 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+
+    ViewBag.Title = "Veículos";
+    ViewBag.SubTitle = "Cadastro de Veículos";
+    ViewBag.activeTab = 1;
+
+    Layout = "ReservaVeiculosMaster.cshtml";
+
+    Intranet.Models.VeiculoVM model = new Intranet.Models.VeiculoVM();
+
+    var qId = Request.QueryString["Id"];
+    if (qId != null)
+    {
+        var e = new Intranet.data.Repositories.VeiculosRepository().Find(Int32.Parse(qId));
+        if (e != null)
+        {
+            model.Id = e.Id;
+            model.Marca = e.Marca;
+            model.Modelo = e.Modelo;
+            model.Cor = e.Cor;
+            model.Ano = e.Ano;
+            model.Chassi = e.Chassi;
+            model.Categoria = e.Categoria;
+            model.Combustivel = e.Combustivel;
+            model.Placa = e.Placa;
+            model.Km = e.Km;
+            model.statusVeiculo = (int)e.StatusVeiculo;
+            model.DataCadastro = e.DataCadastro;
+            model.PermissaoReserva = e.PermissaoReserva;
+        }
+    }
+    else
+    {
+        model.DataCadastro = DateTime.Now;
+    }
+}
+
+@{ Html.RenderPartial("ReservaVeiculos/_veiculo", model); }

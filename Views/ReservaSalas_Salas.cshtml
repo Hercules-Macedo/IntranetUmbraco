@@ -1,0 +1,26 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "ReservaSalas_Master.cshtml";
+    ViewBag.activeTab = 1;
+
+    Intranet.Models.SalaVM model = new Intranet.Models.SalaVM();
+
+    var qId = Request.QueryString["Id"];
+    if (qId != null)
+    {
+        var e = new Intranet.data.Repositories.SalasRepository().Find(Int32.Parse(qId));
+        if (e != null)
+        {
+            model.Id = e.Id;
+            model.Descricao = e.Descricao;
+            model.DataCadastro = e.DataCadastro;
+            model.permissao_reserva = e.permissao_reserva;
+            model._storeStatusSala = (int)e.StatusSala;
+        }
+    }else
+    {
+        model.DataCadastro = DateTime.Now;
+    }
+}
+
+@{ Html.RenderPartial("ReservaSalas/_sala", model); }

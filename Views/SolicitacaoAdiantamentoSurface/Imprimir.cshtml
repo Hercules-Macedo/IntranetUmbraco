@@ -1,0 +1,172 @@
+﻿@model Intranet.Models.AdiantamentoViagem
+@{
+    Layout = "~/Views/Shared/Relatorios/_relatorio_header.cshtml";
+    ViewBag.Title = "Ficha de Adiantamento";
+    System.Globalization.CultureInfo culture = new System.Globalization.CultureInfo("pt-BR");
+    ViewBag.Empresa = Model.CentroCustoEmpresa;
+}
+
+<div class="container">
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td width="50%"><h4>SOLICITAÇÃO DE ADIANTAMENTO</h4></td>
+                <td width="50%" class="text-center"><h4>Nº: @Model.Id.ToString("00000") </h4></td>
+            </tr>
+            <tr>
+                <td><strong>SOLICITANTE:</strong> @ViewBag.autor / @Model.situacaoFuncionario </td>
+                <td class="text-center"><strong>DATA:</strong> @DateTime.Now.ToString("dd/MM/yyyy") </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th width="150">Localidade: </th>
+                            <td class="text-left">@Model.Localidade</td>
+                            <th class="text-left" width="290">Período de viagem</th>
+                        </tr>
+                        <tr>
+                            <th width="150">Motivo: </th>
+                            <td class="text-left">@Model.Motivo</td>
+                            <td class="text-left">@(Model.PeriodoViagemDe.Value.ToString("dd/MM/yyyy")) até @(Model.PeriodoViagemAte.Value.ToString("dd/MM/yyyy"))</td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered table-striped">
+
+                        @if (Model.TipoPgto == "CONTA CORRENTE" || Model.TipoPgto == "CONTA POUPANÇA")
+                        {
+                            <tr>
+                                <th colspan="4">Pagamento</th>
+                            </tr>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Banco</th>
+                                <th>Agência</th>
+                                <th>Conta Corrente</th>
+                            </tr>
+                            <tr>
+                                <td>@Model.TipoPgto</td>
+                                <td width="150">@Model.Banco</td>
+                                <td width="150">@Model.Agencia</td>
+                                <td width="150">@Model.ContaCorrente</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th>Pagamento</th>
+                            </tr>
+                            <tr>
+                                <td>@Model.TipoPgto</td>
+                            </tr>
+                        }
+                    </table>
+
+                    <table class="table table-bordered table-striped">
+                        @if (Model.Meio == "CARRO PRÓRIO")
+                        {
+                            <tr>
+                                <th class="text-left">Transporte</th>
+                                <th class="text-right" width="250">Km(Qtd)</th>
+                                <th class="text-right" width="250">Km(Unt)</th>
+                                <th class="text-right" width="250">Total</th>
+                            </tr>
+                            <tr>
+                                <td class="text-left">@Model.Meio</td>
+                                <td class="text0">@Model.QtdKm Km</td>
+                                <td class="text-right">@string.Format("{0:C} ", Model.ValorUntKm)</td>
+                                <td class="text-right">@string.Format("{0:C} ", Model.ValorTotalKm)</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th colspan="3" class="text-left">Transporte</th>
+                                <th class="text-right" width="250">Total</th>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-left">@Model.Meio</td>
+                                <td class="text-right">@string.Format("{0:C} ", Model.ValorTotalKm)</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th class="text-left">Hospedagem</th>
+                            <th width="250" class="text-right">Diárias</th>
+                            <th width="250" class="text-right">Valor Unt</th>
+                            <th width="250" class="text-right">Valor Total</th>
+                        </tr>
+                        <tr>
+                            <td class="text-left">@Model.ComentariosDiarias</td>
+                            <td class="text-right">@Model.QtdDiarias</td>
+                            <td class="text-right">@string.Format("{0:C}", Model.ValorUntDiaria)</td>
+                            <td class="text-right">@string.Format("{0:C}", Model.ValorTotalDiaria)</td>
+                        </tr>
+
+                        <tr>
+                            <th class="text-left">Refeições</th>
+                            <th class="text-right">Qtd</th>
+                            <th class="text-right">Valor Unt</th>
+                            <th class="text-right">Valor Total</th>
+                        </tr>
+                        <tr>
+                            <td class="text-left">@Model.ComentariosRefeicao</td>
+                            <td class="text-right">@Model.QtdRefeicao</td>
+                            <td class="text-right">@string.Format("{0:C}", Model.ValorUntRefeicao)</td>
+                            <td class="text-right">@string.Format("{0:C}", Model.ValorTotalRefeicao)</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3" class="text-left">Outras despesas</th>
+                            <th class="text-right">Valor</th>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right"></td>
+                            <td class="text-right">@string.Format("{0:C}", Model.outrosValor)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right" colspan="3"><h4>Total</h4></th>
+                            <td class="text-right"><h4><strong>@string.Format("{0:C}", (Model.ValorTotalRefeicao + Model.ValorTotalDiaria + Model.ValorTotalKm + Model.outrosValor))</strong></h4></td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered">
+                        <tr>
+                            <th> Empresa </th>
+                            <td class="text-left"> @Model.CentroCustoEmpresa </td>
+                        </tr>
+                        <tr>
+                            <th> Centro de Custos </th>
+                            <td class="text-left"> @Model.CentroCusto </td>
+                        </tr>
+                        <tr>
+                            <th> Departamento </th>
+                            <td class="text-left"> @ViewBag.Departamento </td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <td><strong>AUTORIZAÇÃO DE PAGAMENTO</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Autorizo o pagamento das despesas acima relacionadas.</td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <td> ________________________________ </td>
+                            <td> ________________________________ </td>
+                        </tr>
+                        <tr>
+                            <td> @ViewBag.autor </td>
+                            <td> Gestor </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

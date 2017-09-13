@@ -1,0 +1,95 @@
+﻿@model Intranet.Models.PrestacaoDeContasItemVM
+@using Intranet.Controllers.Surfaces
+@{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+<div class="modal fade" id="modal-prestacao-item" tabindex="-1" role="dialog" aria-labelledby="modal-prestacao-label">
+    <div class="modal-dialog modal-lg" role="document">
+        @*@using (Html.BeginUmbracoForm<PrestacaoDeContasSurfaceController>("SalvarItem", null, new { id = "form-prestacao", novalidate= "novalidate" }))
+        {*@
+        <form id="form-prestacao-item" novalidate="novalidate">
+            <div class="modal-content">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.Id)
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-prestacao-label">Prestação de Contas</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                @Html.LabelFor(m => m.Descricao)
+                                @Html.TextBoxFor(m => m.Descricao, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Descricao)
+                            </div>
+                            <div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.Recibo)
+                                @Html.TextBoxFor(m => m.Recibo, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Recibo)
+                            </div>
+                            <div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.Valor)
+                                @Html.TextBoxFor(m => m.Valor, new { @class = "form-control money" })
+                                @Html.ValidationMessageFor(m => m.Valor)
+                            </div>
+                            <div class="col-md-2">
+                                <button ng-click="AdicionarItem()" class="btn btn-primary btn-block" style="margin-top: 24px;">Adicionar</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Descrição</th>
+                                        <th width="120">Recibo</th>
+                                        <th width="120">Valor</th>
+                                        <th width="40"></th>
+                                    </tr>
+
+                                    <tr ng-hide="prestacao_items.items.length">
+                                        <td colspan="5">Nenhum item encontrado.</td>
+                                    </tr>
+
+                                    <tr class="form-group-sm" ng-repeat="item in prestacao_items.items">
+                                        <td>{{item.Id}}</td>
+                                        <td>{{item.Descricao}}</td>
+                                        <td>{{item.Recibo}} </td>
+                                        <!-- {{item.Valor | currency:'R$'}} -->
+                                        <td class="margin0 padding5"><input style="height:28px;" type="text" class="form-control margin0" ui-Money data-id="{{item.Id}}" ng-focus="valorEntrar(item.Valor)" ng-blur="valorSair(item.Valor, item.Id)" ng-model="item.Valor" format="9999" /></td>
+                                        <td>
+                                            <button class="btn btn-danger btn-xs" ng-click="ExcluirItem(item.Id)" type="button"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <th class="text-right">Valor total das despesas</th>
+                                        <td width="120" class="text-right">{{ somadespesas(soma(prestacao_items.items)-totalAdiantamento(prestacao_items.Adiantamento)) | currency:'R$' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-right">Valor Recebido(Solicitação de Adiantamentos)</th>
+                                        <td width="120" class="text-right">{{ totalAdiantamento(prestacao_items.Adiantamento) | currency:'R$' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-right"> <span ng-show="(soma(prestacao_items.items) - totalAdiantamento(prestacao_items.Adiantamento) > 0 )" >Valor a receber</span> <span ng-hide="(soma(prestacao_items.items) - totalAdiantamento(prestacao_items.Adiantamento) > 0 )">Valor a restituir</span>  </th>
+                                        <td width="120" class="text-right"><span ng-class="(soma(prestacao_items.items) - totalAdiantamento(prestacao_items.Adiantamento) < 0 ) ? 'text-red':''">{{ soma(prestacao_items.items) - totalAdiantamento(prestacao_items.Adiantamento) | currency:'R$' }}</span> </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Salvar</button>
+                </div>
+            </div>
+        </form>
+        @*}*@
+    </div>
+</div>

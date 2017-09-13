@@ -1,0 +1,83 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.GaleriaOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@using System.Xml.XPath;
+@{
+    Layout = "Master.cshtml";
+    var pageTitle = string.IsNullOrWhiteSpace(CurrentPage.titulo) ? CurrentPage.Name : CurrentPage.titulo;
+    var cols = !CurrentPage.barraLateral ? 9 : 12;
+    var lista = CurrentPage.Children().OrderBy("createDate descending");
+    
+    string tipo = Request.QueryString["tipoGaleria"];
+    if (!String.IsNullOrWhiteSpace(tipo))
+    {
+        lista = Model.Content.Children.Where(c => c.GetPropertyValue<string>("tipoGaleria") == tipo);
+    }
+
+    var delay = 100;
+}
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form action="" method="get">
+        <div class="form-group col-md-5">
+            <label>Selecione o tipo:</label>
+            <select name="tipoGaleria" class="form-control col-md-3">
+                <option value="">Todos</option>
+                @try
+                {
+                    XPathNodeIterator iterator = library.GetPreValues(2367);
+                    iterator.MoveNext(); //move to first
+                    XPathNodeIterator preValues = iterator.Current.SelectChildren("preValue", "");
+                    while (preValues.MoveNext())
+                    {
+                        string preValue = preValues.Current.Value;
+                        @* @preValues.Current.GetAttribute("id", "") *@
+                        <option value="@preValues.Current.Value">@preValues.Current.Value</option>
+                    }
+                } catch (Exception e) {
+                    @e.ToString()
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:25px;">OK</button>
+</form>
+  </div>
+</div>
+
+<div class="row">
+
+    @if (!((IEnumerable<IPublishedContent>)lista).Any())
+    {
+        <div class="col-md-12">
+            Nenhum registro encontrado.
+        </div>
+    }
+
+	@foreach (var item in lista)
+    {
+	<div class="col-sm-4 col-md-3">
+		<div class="thumbnail animate-it" data-delay="@delay">    
+            
+            <img src="@Umbraco.Content(item.Id).GetCropUrl("imagemPreview", "Noticia")" />
+			
+            <div class="caption">
+				<p style="height:40px;">@item.Decricao</p>
+				<p><span class="label label-success">@item.TipoGaleria</span></p>
+                @{ 
+                    var file = item.UploadDocumento;
+                    if (file is string)
+                    {
+                    <p><a href="@item.UploadDocumento" class="btn btn-default btn-xs btn-block" role="button">Download</a></p>
+                    }
+                    else
+                    {
+				    <p><a href="@item.ImagemPreview" class="btn btn-primary btn-xs btn-block" role="button">Download</a></p>
+                    }
+                 }
+            </div>
+		</div>
+		@{ delay+=100; }
+	</div>
+					
+	}
+</div>

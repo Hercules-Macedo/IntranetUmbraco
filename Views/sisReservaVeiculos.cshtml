@@ -1,0 +1,151 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Globalization;
+@{
+
+    CultureInfo ci = new CultureInfo("pt-BR");
+
+    Layout = "Master.cshtml";
+    Intranet.Controllers.ReservaVeiculosController ctrl = new Intranet.Controllers.ReservaVeiculosController();
+    var reservas = ctrl.MinhasReservas();
+}
+@RenderBody()
+
+<div ng-controller="sescoop.controllers.sistemas.reservaVeiculos">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Nova Reservas</div>
+                <div class="panel-body paddingT30">
+                    <div ng-show="msg" class="alert alert-{{msgtype}}" role="alert">
+                        {{msg}}
+                    </div>
+
+                    <input type="hidden" class="form-control" ng-model="form.Id" />
+                    <input type="hidden" class="form-control" ng-model="form.MemberId" value="0" />
+                    <div class="form-group col-md-3">
+                        <div class="form-group">
+                            <label>De</label> <!--{{form.ReservaDe}} - {{form.ReservaDeRaw}} -->
+                            <div class='input-group date'>
+                                <input type="text" callback="datasOnChange(this)" ng-model="form.ReservaDeRaw" ng-model-raw="form.ReservaDe" date-time-picker class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <div class="form-group">
+                            <label>Até</label><!-- {{form.ReservaAte}} - {{form.ReservaAteRaw}}-->
+                            <div class='input-group date'>
+                                <input type="text" callback="datasOnChange(this)" ng-model="form.ReservaAteRaw" ng-model-raw="form.ReservaAte" date-time-picker class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Veiculo</label>
+                        <select ng-disabled="!veiculos_disponiveis.length" class="form-control" ng-model="form.VeiculoId">
+                            <option value= ="">Selecione...</option>
+                            <option ng-repeat="item in veiculos_disponiveis" value="{{item.Id}}"> {{ item.Marca }} {{ item.Modelo }} - {{ item.Cor }} - {{ item.Placa }} </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label>Motivo Reserva</label>
+                        <textarea class="form-control" ng-model="form.MotivoReserva"></textarea>
+                    </div>
+                    <div class="col-md-12 textRight">
+                        <button class="btn btn-primary" ng-click="Reservar()">Reservar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div ng-hide="!msg" class="alert alert-{{msgtype}}" role="alert">
+                {{msg}}
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Minhas Reservas</div>
+                <div class="panel-body padding0">
+                    <table class="table table-striped" ng-init="MinhasReservas()">
+                        <thead>
+                            <tr>
+                                <th>Carro</th>
+                                <th width="100">KM</th>
+                                <th width="100">Placa</th>
+                                <th>Reservado Em:</th>
+                                <th>De</th>
+                                <th>Até</th>
+                                <th class="textCenter">Status</th>
+                                <th class="textCenter">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-hide="Lista.length">
+                                <td colspan="8" class="padding20">Nenhuma reserva encontrada.</td>
+                            </tr>
+                            <tr ng-repeat="item in Lista">
+                                <td>{{ item.Veiculo.Marca }} {{ item.Veiculo.Modelo }} ({{ item.Veiculo.Cor }})</td>
+                                <td>{{ item.Veiculo.Km }} kms.</td>
+                                <td>{{ item.Veiculo.Placa }}</td>
+                                <td>{{ item.DataReserva | date:'dd/MM/yy HH:mm' }}</td>
+                                <td>{{ item.ReservaDe | date:'dd/MM/yy HH:mm': 'UTC' }}</td>
+                                <td>{{ item.ReservaAte | date:'dd/MM/yy HH:mm': 'UTC' }}</td>
+                                <td class="textCenter">{{ enumTo(item.StatusReserva) }} </td>
+                                <td class="textCenter"><button ng-click="Cancelar(item.Id)" class="btn btn-danger btn-xs">CANCELAR</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--
+            <div class="panel panel-default">
+                <div class="panel-heading">Minhas Reservas</div>
+                <div class="panel-body padding0">
+                    <table class="table table-striped">
+
+                        <thead>
+                            <tr>
+                                <th>Carro</th>
+                                <th width="100">KM</th>
+                                <th width="100">Placa</th>
+                                <th>Reservado Em:</th>
+                                <th>De</th>
+                                <th>Até</th>
+                                <th class="textCenter">Status</th>
+                                <th class="textCenter">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!reservas.Any())
+                            {
+                            <tr>
+                                <td colspan="8" class="padding20">Nenhuma reserva encontrada.</td>
+                            </tr>
+                            }
+                            @foreach (Intranet.Models.VeiculoReserva item in reservas)
+                            {
+                            <tr>
+                                <td>@item.Veiculo.Marca @item.Veiculo.Modelo (@item.Veiculo.Cor)</td>
+                                <td>@item.Veiculo.Km kms.</td>
+                                <td>@item.Veiculo.Placa</td>
+                                <td>@item.DataReserva.ToUniversalTime().ToString("dd/MM/yyyy 'às' hh:mm", ci)</td>
+                                <td>@item.ReservaDe.ToUniversalTime().ToString("dd/MM/yyyy 'às' hh:mm", ci)</td>
+                                    <td>@item.ReservaAte.ToUniversalTime().ToString("dd/MM/yyyy 'às' hh:mm", ci)</td>
+                                    <td class="textCenter">@item.StatusReserva</td>
+                                    <td class="textCenter"><button ng-click="Cancelar(@item.Id)" class="btn btn-danger btn-xs">CANCELAR</button></td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+            -->
+        </div>
+    </div>
+</div>

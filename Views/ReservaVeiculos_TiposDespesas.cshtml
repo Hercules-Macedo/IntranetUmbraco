@@ -1,0 +1,66 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "ReservaVeiculosMaster.cshtml";
+}
+
+<form name="formulario" ng-submit="tiposDesepesas.salvar()" xt-form="form" role="form" novalidate>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Cadastro de Veículo / {{formData.Id}}</div>
+        <div class="panel-body">
+
+            <div class="row">
+
+                <div class="form-group col-md-9">
+                    <label>Descrição</label>
+                    <input id="Descricao" type="text" ng-model="formData.Descricao" class="form-control" required="true" />
+                    <xt-validation-inline for="Descricao"></xt-validation-inline>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>Status</label>
+                    <select id="StatusTipoDespesa" ng-model="formData.StatusTipoDespesa" ng-options="i.value as (i.text) for i in tiposDesepesas.StatusTipoDespesa" class="form-control" ng-required="true">
+                        <option>SELECIONE</option>
+                    </select>
+                    <xt-validation-inline for="StatusTipoDespesa"></xt-validation-inline>
+                </div>
+            </div>
+            
+            <div class="textRight marginT10">
+                <button type="submit" class="btn btn-primary" ng-disabled="formulario.$invalid"> <i class="fa fa-car marginR10" aria-hidden="true"></i> SALVAR </button>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Tipos de Despesas</div>
+    <div class="panel-body padding0">
+        <table class="table table-striped" ng-init="tiposDesepesas.listar()">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Descrição</th>
+                    <th>Status</th>
+                    <th width="100"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-hide="tiposDesepesas.itens.length">
+                    <td colspan="3" class="padding20">Nenhuma item encontrado.</td>
+                </tr>
+                <tr ng-repeat="item in tiposDesepesas.itens">
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Descricao}}</td>
+                    <td>{{item.StatusDespesaTipo}}</td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-xs" ng-click="tiposDesepesas.selecionar(item)"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> </button>
+                        <button type="button" class="btn btn-danger btn-xs" ng-click="tiposDesepesas.deleteConfirm(item)"> <i class="fa fa-trash" aria-hidden="true"></i> </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

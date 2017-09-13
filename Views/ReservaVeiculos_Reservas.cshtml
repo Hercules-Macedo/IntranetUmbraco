@@ -1,0 +1,128 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    ViewBag.Title = "Reservas";
+    ViewBag.SubTitle = "Manutenção das Reservas";
+    Layout = "ReservaVeiculosMaster.cshtml";
+    ViewBag.activeTab = 2;
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body" ng-init="Reservas.lista.Pesquisar();">
+        <input type="hidden" ng-model="Reservas.lista.model.MemberId" />
+        <div class="row">
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Reservas.lista.model.ReservaId" class="form-control" id="txtReservaId" placeholder="Id">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Reservas.lista.model.placa" class="form-control" id="txtPlaca" placeholder="Placa">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Reservas.lista.model.modelo" class="form-control" id="txtModelo" placeholder="Modelo">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Reservas.lista.model.marca" class="form-control" id="txtMarca" placeholder="Marca">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="Reservas.lista.model.reservaDe" class="form-control" id="txtDe" placeholder="De">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="Reservas.lista.model.reservaAte" class="form-control" id="txtAte" placeholder="Até">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Reservas.lista.model.LoginName" class="form-control" id="txtLoginName" placeholder="Login">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Reservas.lista.model.Email" class="form-control" id="txtEmail" placeholder="Email">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <select ng-model="Reservas.lista.model.statusReserva" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="1">CONFIRMADA</option>
+                    <option value="2">ANDAMENTO</option>
+                    <option value="3">CANCELADA</option>
+                    <option value="4">CONCLUIDA</option>
+                </select>
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <button class="btn btn-primary btn-block btn-sm" ng-click="Reservas.lista.pag.currentPage=1;Reservas.lista.Pesquisar();">PESQUISAR</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Reservas</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="Reservas.lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [10,20,50,100]" ng-change="Reservas.lista.pag.currentPage=1;Reservas.lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="Reservas.lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'R.Id', text:'Id'}, {value:'R.statusReserva', text:'Status'},{value:'R.reservaDe', text:'De'},{value:'R.reservaAte', text:'Até'}]" ng-change="Reservas.lista.pag.currentPage=1;Reservas.lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="Reservas.lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="Reservas.lista.pag.currentPage=1;Reservas.lista.Pesquisar();"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-column-id="Id" data-type="numeric" width="30" data-identifier="true">ID</th>
+                            <th data-column-id="Veiculo">Veiculo</th>
+                            <th data-column-id="Placa">Usuário</th>
+                            <th data-column-id="ReservaDe" data-order="desc" data-converter="datetime">De</th>
+                            <th data-column-id="ReservaAte" data-order="desc" data-converter="datetime">Até</th>
+                            <th data-column-id="Status" data-formatter="link" data-sortable="false">Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-hide="Reservas.lista.data.length">
+                            <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+                        </tr>
+                        <tr ng-repeat="item in Reservas.lista.data">
+                            <td>{{item.ReservaId | zeropadding:4}}</td>
+                            <td>{{ item.marca }} {{ item.modelo }} {{ item.ano }}</td>
+                            <td>{{ item.LoginName }}</td>
+                            <td>{{item.reservaDe | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                            <td>{{item.reservaAte | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                            <td>{{item.statusReserva | EnumStatusSalaReserva }}</td>
+                            <td class="textCenter">
+                                <button class="btn btn-primary btn-xs" data-toggle="tooltip" title="Iniciar" ng-click="ModalVeiculoIniciar(item)" ng-show="ShowIniciar(item)"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></button>
+                                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Cancelar" ng-click="ModalVeiculoCancelar(item)" ng-show="ShowCancelar(item)"><i class="fa fa-times-circle" aria-hidden="true"></i></button>
+                                <button class="btn btn-warning btn-xs" data-toggle="tooltip" title="Finalizar" ng-click="ModalVeiculoFinalizar(item)" ng-show="ShowAndamento(item)"><i class="fa fa-sign-in" aria-hidden="true"></i></button>
+                                <a class="btn btn-primary btn-xs" target="_blank" href="/umbraco/surface/Relatorios/FichaReserva/{{item.ReservaId}}"><i class="fa fa-print" aria-hidden="true"></i></a>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- pager -->
+                <pagination changing="Reservas.lista.Pesquisar();" pagining="Reservas.lista.pag"></pagination>
+                <!-- pager -->
+
+            </div>
+        </div>
+
+    </div>
+</div>

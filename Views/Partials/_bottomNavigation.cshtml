@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+@{
+	var LinksList = CurrentPage.Site().links;
+    var BannersList = CurrentPage.Site().Banners;
+}
+
+<div class="row bottom-navgation">
+	<div class="col-md-4">
+		<h4>Consultas</h4>
+		<div class="list-group">
+			
+            @foreach(var field in LinksList)
+            {
+                if(field.GetValue("tipo") == "Consultas") { 
+                <a href="@field.GetValue("url")" target="_blank" class="list-group-item">@field.GetValue("texto")</a>
+                }
+            }
+
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<h4>Sistemas</h4>
+		<div class="list-group">
+			@foreach (var field in LinksList)
+            {
+                if (field.GetValue("tipo") == "Sistemas")
+                {
+                    <a href="@field.GetValue("url")" target="_blank" class="list-group-item">@field.GetValue("texto")</a>
+                }
+            }
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<h4>O Grupo</h4>
+		<div class="list-group">
+			@foreach (var field in LinksList)
+            {
+                if (field.GetValue("tipo") == "Links")
+                {
+                    <a href="@field.GetValue("url")" target="_blank" class="list-group-item">@field.GetValue("texto")</a>
+                }
+            }
+		</div>
+	</div>
+</div>

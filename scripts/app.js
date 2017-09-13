@@ -1,0 +1,1 @@
+﻿var app = angular.module('sescoop.app', ['ui.rCalendar', 'ngMessages', 'xtForm', 'ui.mask', 'autoCompleteModule']);

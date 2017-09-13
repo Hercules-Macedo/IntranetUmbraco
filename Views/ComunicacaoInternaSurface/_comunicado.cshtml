@@ -1,0 +1,71 @@
+﻿@model  Intranet.Models.ComunicacaoInternaVM
+
+@{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ComunicacaoInternaSurfaceController>("Salvar", null, new { id = "form-ci" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(m => m.Id, new { value = "", @class = "form-control" })
+    <div class="panel panel-default" ng-init="buildEditor()">
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    @{ var empresas = new List<string>() { "SESCOOP/SP", "OCESP", "FESCOOP" }; }
+                    @{ var lista = new SelectList(empresas, Model.Empresa); }
+                    @Html.LabelFor(m => m.Empresa)
+                    @Html.DropDownListFor(m => m.Empresa, lista, "TODOS", new { @class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Empresa)
+                </div>
+                <div class="form-group col-md-4">
+                    @Html.Hidden("hdArea", Model.Area)
+                    @Html.LabelFor(m => m.Area)
+                    @Html.DropDownListFor(m => m.Area, new List<SelectListItem>(), "TODOS", new { @class = "form-control",ng_model="Area", ng_change="change_area(this);" })
+                    @Html.ValidationMessageFor(model => model.Area)
+                </div>
+                <div class="form-group col-md-4">
+                    @Html.Hidden("hdDepartamento", Model.Departamento)
+                    @Html.LabelFor(m => m.Departamento)
+                    @Html.DropDownListFor(m => m.Departamento, new List<SelectListItem>(), "TODOS", new { @class = "form-control", ng_model = "Departamento" })
+                    @Html.ValidationMessageFor(model => model.Departamento)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.Para)
+                    @Html.TextBoxFor(m => m.Para, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Para)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.Assunto)
+                    @Html.TextBoxFor(m => m.Assunto, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Assunto)
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <div id="summernote"></div>
+                    @Html.HiddenFor(m => m.Descricao)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary col-md-2 col-md-offset-10">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- include summernote css/js-->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>

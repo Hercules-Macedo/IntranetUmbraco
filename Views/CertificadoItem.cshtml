@@ -1,0 +1,38 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.CertificadoItem>
+@using umbraco.businesslogic;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+    var participantes = Umbraco.Content(CurrentPage.Id).Children.Where("Visible").OrderBy("Nome");
+    ViewBag.Title = CurrentPage.Treinamento;
+    ViewBag.SubTitle = String.Format("{0} participantes.", participantes.Count() );
+}
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th> Nome </th>
+                <th> CPF </th>
+                <th width="100"> &nbsp; </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (!participantes.Any())
+            {
+                <tr>
+                    <td colspan="2">Não foram encontrados Cursos.</td>
+                </tr>
+            }
+
+            @foreach (var participante in participantes)
+            {
+                <tr>
+                    <td>@participante.Nome</td>
+                    <td>@participante.CPF</td>
+                    <td> <a href="/umbraco/surface/Relatorios/Certificado/@(new umbraco.cms.businesslogic.web.Document(Convert.ToInt32(participante.Id)).UniqueId.ToString())" class="btn btn-primary btn-xs"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i> Imprimir </a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

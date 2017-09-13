@@ -1,0 +1,45 @@
+﻿@inherits UmbracoTemplatePage
+<div class="row">
+    @{
+        var homePage = Umbraco.Content(1092);
+        var newsOverview = homePage.newsOverview.First();
+        var newsItems = newsOverview.NoticiasItem.Where("Destaque").OrderBy("createDate desc").Take(3);
+    }
+    @foreach (var item in newsItems)
+            {
+                var dateTime = item.PublishDate == default(DateTime)
+                ? item.CreateDate
+                : item.PublishDate;
+
+                var subheader = string.IsNullOrWhiteSpace(item.breveDescricao)
+                   ? Umbraco.Truncate(Umbraco.StripHtml(item.texto), 120, true, false)
+                   : Umbraco.Truncate(Umbraco.StripHtml(item.breveDescricao), 120, true, false);
+
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <!--
+                <div class="panel-heading"> @dateTime.ToString("dd 'de' MMMM 'de' yyyy", HTMLHelpers.cultureInfo()) </div>
+                -->
+                @{
+                     var imgUrl = @item.GetCropUrl("imagemDestaque", "NoticiaPrincipal");
+                    imgUrl = String.IsNullOrWhiteSpace(imgUrl) ? "/media/images/noticias-defaultl.png" : imgUrl;
+                }
+                <img src="@imgUrl" style="width:100%;" />
+
+                <div class="panel-body padding0">
+                    <div class="padding10" style="height:200px;">
+                        <h3 class="padding0"><a href="@item.Url">@item.tituloNoticia</a></h3>
+                        <p>@subheader</p>
+                    </div>
+                </div>
+
+
+                <div class="panel-footer textRight">
+                    <a class="btn btn-primary btn-sm" href="@item.Url">Notícia Completa</a>
+                </div>
+            </div>
+
+        </div>
+                    }
+</div>

@@ -1,0 +1,114 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    ViewBag.Title = "Veículos";
+    ViewBag.SubTitle = "Manutenção de Veículos";
+    ViewBag.activeTab = 3;
+    Layout = "ReservaVeiculosMaster.cshtml";
+}
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body" ng-init="Manutencao.lista.Pesquisar();">
+        <input type="hidden" ng-model="Manutencao.lista.model.MemberId" ng-init="Manutencao.lista.model.MemberId = @Members.GetCurrentMemberId();" />
+        <div class="row">
+            
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.Id" class="form-control" id="txtReservaId" placeholder="Id">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.placa" class="form-control" id="txtPlaca" placeholder="Placa">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.modelo" class="form-control" id="txtModelo" placeholder="Modelo">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.marca" class="form-control" id="txtMarca" placeholder="Marca">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="Manutencao.lista.model.dataManutencao" class="form-control" id="txtDataManutencao" placeholder="Data da Manutenção">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.notaFiscal" class="form-control" id="txtNotaFiscal" placeholder="Nota Fiscal">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.LoginName" class="form-control" id="txtLoginName" placeholder="Login">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="Manutencao.lista.model.Email" class="form-control" id="txtEmail" placeholder="Email">
+            </div>
+
+            <div class="form-group-sm col-xs-offset-9 col-md-3 marginT10">
+                <button class="btn btn-primary btn-block btn-sm" ng-click="Manutencao.lista.pag.currentPage=1; Manutencao.lista.Pesquisar();">PESQUISAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <input type="button" value="Novo" class="btn btn-primary" ng-click="Manutencao.ModalManutencaoNovo();">
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Manutenção de Veículos</div>
+    <div class="panel-body">
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="Manutencao.lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [10,20,50,100]" ng-change="Manutencao.lista.pag.currentPage=1;Manutencao.lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="Manutencao.lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'M.Id', text:'Id'}, {value:'valor', text:'Valor'},{value:'dataManutencao', text:'Data'},{value:'descricao', text:'Descrição'}]" ng-change="Manutencao.lista.pag.currentPage=1;Manutencao.lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="Manutencao.lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="Manutencao.lista.pag.currentPage=1;Manutencao.lista.Pesquisar();"></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-column-id="Id" data-type="numeric" width="30" data-identifier="true">ID</th>
+                            <th data-column-id="Veiculo">Veiculo</th>
+                            <th data-column-id="Servico">Serviço</th>
+                            <th data-column-id="Responsavel">Responsavel</th>
+                            <th data-column-id="Em" data-order="desc" data-converter="datetime">Em</th>
+                            <th data-column-id="Valor" data-formatter="link" data-sortable="false">Valor</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-hide="Manutencao.lista.data.length">
+                            <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+                        </tr>
+                        <tr ng-repeat="item in Manutencao.lista.data">
+                            <td>{{item.Id | zeropadding:4}}</td>
+                            <td>{{ item.marca }} {{ item.modelo }} {{ item.ano }}</td>
+                            <td>{{ item.descricao }}</td>
+                            <td>{{ item.LoginName }}</td>
+                            <td>{{item.dataManutencao | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                            <td>{{item.valor | currency:"R$ " }}</td>
+                            <td class="textCenter">
+                                <button class="btn btn-primary btn-xs" data-toggle="tooltip" title="Iniciar" ng-click="ModalVeiculoIniciar(item)" ng-show="ShowIniciar(item)"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></button>
+                                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Cancelar" ng-click="ModalVeiculoCancelar(item)" ng-show="ShowCancelar(item)"><i class="fa fa-times-circle" aria-hidden="true"></i></button>
+                                <button class="btn btn-warning btn-xs" data-toggle="tooltip" title="Finalizar" ng-click="ModalVeiculoFinalizar(item)" ng-show="ShowAndamento(item)"><i class="fa fa-sign-in" aria-hidden="true"></i></button>
+                                <a class="btn btn-primary btn-xs" target="_blank" href="/umbraco/surface/Relatorios/FichaReserva/{{item.ReservaId}}" ng-show="ShowCancelar(item)"><i class="fa fa-print" aria-hidden="true"></i></a>
+                                <a class="btn btn-danger btn-xs" ng-click="Manutencao.ModalManutencaoExcluir(item);"> X </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- pager -->
+                <pagination changing="Manutencao.lista.Pesquisar();" pagining="Manutencao.lista.pag"></pagination>
+                <!-- pager -->
+
+            </div>
+        </div>
+    </div>
+</div>
+

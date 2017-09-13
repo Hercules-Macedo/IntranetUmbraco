@@ -1,0 +1,166 @@
+﻿@model Intranet.Models.PrestacaoDeContasVM
+
+@using Intranet.Controllers.Surfaces
+@using Intranet.Models
+@using Intranet.data.Repositories.Base
+
+@{
+    var centroCustos = new BaseRepository<CentroCustos>().dbContext.Database.Fetch<CentroCustos>(new Umbraco.Core.Persistence.Sql("SELECT * FROM [sisCentroCustos]"));
+
+    List<string> ccValues = new List<string>();
+    foreach (var c in centroCustos)
+    {
+        ccValues.Add(String.Format("{0} - {1}", c.cod_proc_proj, c.nom_proc_proj));
+    }
+
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+<div class="modal fade" id="modal-prestacao" tabindex="-1" role="dialog" aria-labelledby="modal-prestacao-label">
+    <div class="modal-dialog modal-lg" role="document">
+        @using (Html.BeginUmbracoForm<PrestacaoDeContasSurfaceController>("Salvar", null, new { id = "form-prestacao" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="modal-content">
+                @Html.Hidden("MemberId", 0)
+                @Html.HiddenFor(m => m.Id)
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-prestacao-label">Prestação de Contas</h4>
+                </div>
+                <div class="modal-body padding5" style="background: #EEE;">
+                    <div class="panel panel-default marginB5">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-10">
+                                    @Html.LabelFor(m => m.AdiantamentoViagemId)
+                                    @Html.DropDownListFor(m => m.AdiantamentoViagemId, new SelectList(new List<string>()), "SEM ADIANTAMENTO", new { @class = "form-control", ng_model = "adiantamento", ng_change = "AdiantamentoViagemIdChange(this)" })
+                                    @Html.ValidationMessageFor(m => m.AdiantamentoViagemId)
+                                    @*@Html.TextBoxFor(m => m.AdiantamentoViagemId, new { @class = "form-control", type = "number", ng_blur = "AdiantamentoViagemIdBlur(this)", ng_model = "adiantamento", list = "ac-adiantamentos" })
+                                        <datalist id="ac-adiantamentos"></datalist>*@
+                                </div>
+                                <div class="form-group-sm col-md-2">
+                                    <button type="button" style="margin-top:24px;" ng-click="AlterarAdiantamento()" ng-disabled="!adiantamento" class="btn btn-sm btn-block btn-primary cls-btn-editar-adiantamento" title="Editar"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default marginB5">
+                        <div class="panel-body">
+
+                            <div class="row">
+                                <div class="form-group-sm col-md-6">
+                                    @Html.LabelFor(m => m.localidade)
+                                    @Html.TextBoxFor(m => m.localidade, new { @class = "form-control", placeholder = "(exp) São Paulo ..." })
+                                    @Html.ValidationMessageFor(m => m.localidade)
+                                </div>
+
+                                <div class="form-group-sm col-md-6">
+                                    @Html.LabelFor(m => m.Motivo)
+                                    @Html.TextBoxFor(m => m.Motivo, new { @class = "form-control", placeholder = "(exp) Feira de eventos ..." })
+                                    @Html.ValidationMessageFor(m => m.Motivo)
+                                </div>
+                            </div>
+
+                            <div class="row marginT10">
+                                <div class="form-group-sm col-md-3">
+                                    @Html.LabelFor(m => m.periodoViagemDe)
+                                    @Html.TextBox("periodoViagemDe", (Model.periodoViagemDe != null ? Model.periodoViagemDe.Value.ToString("yyyy-MM-dd") : ""), new { type = "date", @class = "form-control date" })
+                                    @Html.ValidationMessageFor(m => m.periodoViagemDe)
+                                </div>
+
+                                <div class="form-group-sm col-md-3">
+                                    @Html.LabelFor(m => m.periodoViagemAte)
+                                    @Html.TextBox("periodoViagemAte", (Model.periodoViagemAte != null ? Model.periodoViagemAte.Value.ToString("yyyy-MM-dd") : ""), new { type = "date", @class = "form-control date" })
+                                    @Html.ValidationMessageFor(m => m.periodoViagemAte)
+                                </div>
+                                <div class="form-group-sm col-md-3">
+                                    @Html.LabelFor(m => m.situacaoFuncionario)
+                                    @{ var situacao = new List<string>() { "FUNCIONÁRIO", "CONSELHEIRO", "COLABORADOR EVENTUAL" }; }
+                                    @Html.DropDownListFor(m => m.situacaoFuncionario, new SelectList(situacao), "Selecione o tipo", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.situacaoFuncionario)
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="panel panel-default marginB5">
+                        <div class="panel-body">
+
+                            <div class="row">
+                                <div class="form-group-sm col-md-3">
+                                    @Html.LabelFor(m => m.tipoPgto)
+                                    @{ var tiposPgto = new List<string>() { /*"DINHEIRO", "CHEQUE",*/ "CONTA CORRENTE", "CONTA POUPANÇA" }; }
+                                    @Html.DropDownListFor(m => m.tipoPgto, new SelectList(tiposPgto, Model.tipoPgto), "Selecione o tipo", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.tipoPgto)
+                                </div>
+                                <div class="form-group-sm col-md-3 conta_corrente">
+                                    @Html.LabelFor(m => m.banco)
+                                    @Html.TextBoxFor(m => m.banco, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.banco)
+                                </div>
+
+                                <div class="form-group-sm col-md-3 conta_corrente">
+                                    @Html.LabelFor(m => m.agencia)
+                                    @Html.TextBoxFor(m => m.agencia, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.agencia)
+                                </div>
+
+                                <div class="form-group-sm col-md-3 conta_corrente">
+                                    @Html.LabelFor(m => m.contaCorrente)
+                                    @Html.TextBoxFor(m => m.contaCorrente, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.contaCorrente)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default marginB5">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-3">
+                                    @Html.LabelFor(m => m.CentroCustoEmpresa)
+                                    @Html.DropDownListFor(m => m.CentroCustoEmpresa, new SelectList(new List<string>() { "SESCOOP/SP", "OCESP", "FESCOOP" }, Model.CentroCustoEmpresa), "TODOS", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.CentroCustoEmpresa)
+                                </div>
+                                <div class="form-group-sm col-md-6">
+                                    @Html.LabelFor(m => m.CentroCusto)
+                                    @Html.DropDownListFor(m => m.CentroCusto, new SelectList(ccValues, Model.CentroCusto), "SELECIONE", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CentroCusto)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+                                        }
+    </div>
+</div>
+
+<div class="modal fade" id="modal-prestacao-excluir" tabindex="-1" role="dialog" aria-labelledby="modal-prestacao-excluir-label">
+    @using (Html.BeginUmbracoForm<PrestacaoDeContasSurfaceController>("Excluir", null, new { id = "form-prestacao" }))
+    {
+        @Html.Hidden("Id", 0)
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-prestacao-excluir-label">Excluir item</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Deseja realmente excluir o registro selecionado?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

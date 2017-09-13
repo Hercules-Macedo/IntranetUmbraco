@@ -1,0 +1,123 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.EventosOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@using Archetype.Models;
+@{
+    Layout = "Master.cshtml";
+    var eventos = Model.Content.Children.Where(d => d.DocumentTypeAlias == "agendaItem").ToList();
+    var indice = 1;
+    var ultimoMes = -1;
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtro</div>
+    <div class="panel-body">
+        
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">PROGRAMAÇÃO DE EVENTOS INTERNOS - ANO @DateTime.Now.Year</div>
+    
+    <table class="table table-striped small">
+        @foreach (var item in eventos)
+        {
+            if (ultimoMes != item.GetPropertyValue<DateTime>("dtOrdem").Month)
+            {
+                indice = 1;
+                <tr style="background:#000; color:#fff;">
+                    <th class="text-center" colspan="9">@HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(item.GetPropertyValue<DateTime>("dtOrdem").Month).ToString().ToUpper()</th>
+                </tr>
+                <tr style="background:#fff200; color:#000;">
+                    <th>QTD</th>
+                    <th>DIA</th>
+                    <th>EVENTO</th>
+                    <th>HORÁRIO</th>
+                    @*<th>PESSOAS</th>*@
+                    @*<th>SOLICITANTE</th>*@
+                    <th>ÁREA</th>
+                    <th>NUCLEO</th>
+                    <th>COOPERATIVA/EMPRESA</th>
+                    @*<th>NECESSIDADES</th>*@
+                    <th>OBJETIVO</th>
+                    @*<th>PUBLICO ALVO</th>*@
+                    <th>LOCAL</th>
+                    @*<th>CPE</th>*@
+                </tr>
+            }
+            <tr>
+                <td>@indice</td>
+                <td style="background:#bf80ef; color:#000;">
+                    @(HTMLHelpers.AjustarData(item.GetPropertyValue<ArchetypeModel>("dias")))
+                </td>
+                <td>
+                    @(item.GetPropertyValue<string>("evento"))
+                </td>
+                <td>
+                    @(item.GetPropertyValue<string>("horario"))
+                </td>
+                @*<td>
+                    @(item.GetPropertyValue<string>("pessoas"))
+                </td>
+                <td>
+                    @(string.Join("/", item.GetPropertyValue<string[]>("solicitante")))
+                </td>*@
+                <td>
+                    @(item.GetPropertyValue<string[]>("areaEDepartamento")[0].ToUpper())
+                </td>
+                <td>
+                    @(item.GetPropertyValue<string[]>("areaEDepartamento")[1].ToUpper())
+                </td>
+                <td>
+                    @(item.GetPropertyValue<string>("cooperativaEmpresa").ToUpper())
+                </td>
+                @*<td>
+                    @( item.GetPropertyValue<string>("necessidades"))
+                </td>*@
+                <td>
+                    @( item.GetPropertyValue<string>("objetivo"))
+                </td>
+                @*<td>
+                    @( item.GetPropertyValue<string>("publicoAlvo"))
+                </td>*@
+                <td>
+                    @( item.GetPropertyValue<string>("local"))
+                </td>
+                @*<td>
+                    @( item.GetPropertyValue<string>("cPE"))
+                </td>*@
+            </tr>
+            indice++;
+            ultimoMes = item.GetPropertyValue<DateTime>("dtOrdem").Month;
+        }
+    </table>
+    <div class="panel-footer">
+        <div class="text-right">
+            @using (Html.BeginUmbracoForm<Intranet.Controllers.AgendaSurfaceController>("Exportar", null, new { id = "form-caixinha" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("ano", DateTime.Now.Year)
+                @Html.Hidden("tipo", "INTERNO")
+                <button class="btn btn-success btn-sm" type="submit">Exportar para Excel</button>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">PROGRAMAÇÃO DE EVENTOS OCESP/SESCOOP-SP - ANO @DateTime.Now.Year
+</div>
+    <div class="panel-body">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </div>
+    <div class="panel-footer">
+        <div class="text-right">
+            @using (Html.BeginUmbracoForm<Intranet.Controllers.AgendaSurfaceController>("Exportar", null, new { id = "form-caixinha" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("ano", DateTime.Now.Year)
+                @Html.Hidden("tipo", "EXTERNO")
+                <button class="btn btn-success btn-sm" type="submit">Exportar para Excel</button>
+            }
+        </div>
+    </div>
+</div>

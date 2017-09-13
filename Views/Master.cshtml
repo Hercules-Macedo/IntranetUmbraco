@@ -1,0 +1,175 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = null;
+
+    var home = @CurrentPage.Site();
+    var pageTitle = string.IsNullOrWhiteSpace(ViewBag.Title) ? "" : ViewBag.Title;
+
+    if (string.IsNullOrWhiteSpace(pageTitle))
+        pageTitle = string.IsNullOrWhiteSpace(CurrentPage.titulo) ? CurrentPage.Name : CurrentPage.titulo;
+    var pagSubTitle = string.IsNullOrWhiteSpace(ViewBag.SubTitle) ? CurrentPage.subTituloMaster : ViewBag.SubTitle;
+}
+<!DOCTYPE html>
+<html lang="en" ng-app="sescoop.app">
+<head>
+
+    <!-- Meta tags -->
+    <title>@pageTitle</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="@CurrentPage.siteDescription">
+
+
+    @Styles.Render("~/bundles/css")
+    @Scripts.Render("~/bundle/jQuery")
+
+    <link href="~/css/calendar.css" rel="stylesheet" />
+    <link href="~/css/sistemas.css" rel="stylesheet" />
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="~/media/images/fav/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="~/media/images/fav/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="~/media/images/fav/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="~/media/images/fav/manifest.json">
+    <link rel="mask-icon" href="~/media/images/fav/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.8/jquery.mask.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- CurrentPage:@CurrentPage.Id -->
+
+</head>
+<body>
+
+    <!-- LOADER -->
+    <div id="loader" class="loader">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+    </div>
+    <!-- LOADER -->
+
+    <!-- HEADER -->
+    <header>
+
+        <!-- NAV -->
+        <div class="container-fluid">
+            <div class="row">
+                @{ Html.RenderPartial("_mainNavigation"); }
+            </div>
+        </div>
+        <!-- NAV -->
+
+        <!-- BREAD -->
+        <div class="breadcrumbs">
+            <div class="container">
+                <div class="row">
+                    @{ Html.RenderPartial("_breadCrumbs"); }
+                </div>
+            </div>
+        </div>
+        <!-- BREAD -->
+
+        <!-- TITLE -->
+        @if (CurrentPage.esconderTitulo == false)
+        {
+        if (ViewBag.SobTitle != null)
+        {
+        <div class="container title-container marginT30">
+            <div class="row">
+                <h3>@Html.Raw(ViewBag.SobTitle)</h3>
+            </div>
+        </div>
+        }
+
+        <div class="container title-container">
+            <div class="row">
+                <div class="page-header marginB0">
+                    <h1 class="page-title"> @pageTitle </h1>
+                    <h3 class="page-sub-title"> @pagSubTitle </h3>
+                    @if (!String.IsNullOrEmpty(CurrentPage.breveDescricao))
+                    {
+                        <p class="page-tile-description">@CurrentPage.breveDescricao</p>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+        <!-- TITLE -->
+    </header>
+    <!-- HEADER -->
+
+    <!-- CONTEUDO -->
+    <div class="container RenderBody">
+        <div class="row">
+            @if (TempData["msg-type"] != null)
+            {
+                <div class="container">
+                    <div class="row">
+                        <div class="alert alert-@TempData["msg-type"].ToString().ToLower() alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <strong>Mensagem: </strong> @TempData["msg"]
+                        </div>
+                    </div>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </div>
+    <!-- CONTEUDO -->
+
+    <!-- FOOTER -->
+    <footer class="field dark">
+        <div class="container">
+
+            <div class="row">
+                @{ Html.RenderPartial("_breadCrumbs"); }
+            </div>
+
+            @{ Html.RenderPartial("_bottomNavigation"); }
+            <div class="bottom-text row textCenter">
+                <div class="col-md-6"> Sistema OCESP <!-- Copyright © @DateTime.Today.Year CapimTI. All rights reserved.-->  </div>
+                <div class="col-md-6"> Solução utilizando tecnologia UMBRACO. </div>
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER -->
+
+    @Scripts.Render("~/bundle/Base")
+    @Scripts.Render("~/bundle/Angular.1.5.8")
+
+    
+    @*
+    <!-- Piwik -->
+    <script type="text/javascript">
+        var _paq = _paq || [];
+        _paq.push(['setCustomVariable', 1, 'MemberName', '@(Members.CurrentUserName ?? "Não Logado")', 'page']);
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function () {
+            var u = "http://192.168.0.17/piwik/";
+            _paq.push(['setTrackerUrl', u + 'piwik.php']);
+            _paq.push(['setSiteId', '1']);
+
+
+
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'piwik.js'; s.parentNode.insertBefore(g, s);
+        })();
+    </script>
+    <noscript><p><img src="//192.168.0.17/piwik/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+    <!-- End Piwik Code -->
+    *@
+
+</body>
+</html>

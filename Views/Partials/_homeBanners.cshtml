@@ -1,0 +1,72 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+
+@{
+    var BannersList = CurrentPage.Site().Banners;
+    var BannersListDate = new List<Archetype.Models.ArchetypeFieldsetModel>();
+
+    foreach (Archetype.Models.ArchetypeFieldsetModel field in BannersList)
+    {
+        if (field.GetValue<DateTime>("expira") > DateTime.Now)
+        {
+            BannersListDate.Add(field);
+        }
+    }
+}
+
+<!-- START REVOLUTION SLIDER 3.1 rev5 fullwidth mode -->
+@if (BannersListDate.Any())
+{ 
+    <div class="tp-banner-container">
+        <div class="tp-banner" style="max-height:350px;">
+            <ul>
+            
+                @foreach (Archetype.Models.ArchetypeFieldsetModel field in BannersList)
+                {
+
+                var imagem = Newtonsoft.Json.JsonConvert.DeserializeObject<ImageCropDataSet>(field.GetValue("imagem"));
+                <!-- SLIDE  -->
+                <li data-transition="fade" data-slotamount="5" data-masterspeed="91200">
+                    <!-- MAIN IMAGE -->
+                    <img src="@(imagem.Src + imagem.GetCropUrl("BannerPrincipal", true))" alt="@field.GetValue("descricao")" data-bgfit="normal" data-bgposition="top left" data-bgrepeat="no-repeat" />
+
+
+                    <!-- LAYER NR. 1 -->
+                    <div class="tp-caption medium_bg_asbestos fade"
+                         data-x="@field.GetValue("posicaoX")"
+                         data-y="@field.GetValue("posicaoY")"
+                         data-speed="100"
+                         data-start="600"
+                         data-easing="Power4.easeOut"
+                         data-endspeed="400"
+                         data-endeasing="Power1.easeIn"
+                         data-captionhidden="off"
+                         style="z-index: 6">
+                        <a target="_blank" href="@field.GetValue("url")">@field.GetValue("descricao")</a>
+                    </div>
+                </li>
+                }
+            </ul>
+            <div class="tp-bannertimer"></div>
+        </div>
+    </div>
+    
+    <script src="~/scripts/js/jquery.themepunch.plugins.min.js"></script>
+    <script src="~/scripts/js/jquery.themepunch.revolution.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var revapi;
+            revapi = jQuery('.tp-banner').revolution(
+             {
+                 sliderType: "standard",
+                 gridwidth: 1200,
+                 gridheight: 350
+
+             });
+        });
+    </script>
+
+    <link href="~/css/settings.css" rel="stylesheet" />
+}
+

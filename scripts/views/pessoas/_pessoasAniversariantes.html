@@ -1,0 +1,26 @@
+﻿<div class='panel panel-default' ng-controller="sescoop.controllers.pessoa">
+    <div class="panel-heading"> <i class="fa fa-birthday-cake" aria-hidden="true"></i> Aniversariantes do Mês </div>
+    <div class="panel-body box-widget">
+        <div ng-hide="show" style="height:150px; background:#EEE;">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+            <span class="sr-only">Loading...</span>
+        </div>
+
+        <div ng-init="lista.aniversariantes()" ng-hide="filtered.length">
+            <h3> Não há colaboradores.</h3>
+        </div>
+
+        <div class="list-group">
+            <a href="#" ng-click="info(item);" class="list-group-item" ng-repeat="item in filtered = (itens | filter:searchText )">
+                <div class="fontSize70">{{ item.dataNascimento | date:"dd  'de' MMMM" : 'UTC' |  uppercase}}</div>
+                <div class="single-line"><strong>{{ item.nome | cut:true: 35:' ...'}}</strong></div>
+                <i class="fa fa-chevron-right float-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        {{ itens.length }} Usuários encontrados
+    </div>
+    <div modal-show modal-name="modal-detalhes-aniversariante" modal-visible="false"></div>
+</div>

@@ -1,0 +1,28 @@
+﻿@model Intranet.Models.IntVM
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaVeiculosSurfaceController>("ManutencaoExcluir", null, new { id = "form-veiculo-manutencao-excluir" }))
+{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+    Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+
+    <div class="modal fade" id="modalVeiculoManutencaoExcluir" tabindex="-1" role="dialog" aria-labelledby="modalVeiculoManutencaoExcluir-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-times-circle" aria-hidden="true"></i> Excluir Manutencao</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Deseja realmente excluir o item: <strong>{{ vw.descricao }}</strong> ? </p>
+                    @Html.HiddenFor(m => m.Value)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

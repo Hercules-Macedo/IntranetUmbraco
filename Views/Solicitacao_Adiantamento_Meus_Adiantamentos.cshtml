@@ -1,0 +1,110 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Solicitacao_Adiantamento_Master.cshtml";
+    ViewBag.activeTab = 0;
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body">
+
+        <div class="form-group col-md-2">
+            <label class="control-label" for="txtId">Código</label>
+            <input type="text" ng-model="lista.model.Id" class="form-control" id="txtId" placeholder="Código">
+        </div>
+
+        <div class="form-group col-md-10">
+            <label class="control-label" for="txtLocalidade">Localidade</label>
+            <input type="text" ng-model="lista.model.localidade" class="form-control" id="txtLocalidade" placeholder="Localidade">
+        </div>
+
+        <div class="form-group col-md-6">
+            <label class="control-label" for="txtEquipamentoDesc">Motivo</label>
+            <input type="text" ng-model="lista.model.motivo" class="form-control" id="txtMotivo" placeholder="Motivo">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtPeriodoViagemDe">De</label>
+            <input type="date" ng-model="lista.model.periodoViagemDe" class="form-control" id="txtPeriodoViagemDe" placeholder="De">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtPeriodoViagemAte">Até</label>
+            <input type="date" ng-model="lista.model.periodoViagemAte" class="form-control" id="txtPeriodoViagemAte" placeholder="De">
+        </div>
+
+        <input type="hidden" ng-model="lista.model.memberId" name="lista.model.memberId" ng-init="lista.model.memberId=@(Members.GetCurrentMemberId());" />
+
+        <!--
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtLoginName">Login</label>
+            <input type="text" ng-model="lista.model.LoginName" class="form-control" id="txtLoginName" placeholder="Login">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtEmail">Email</label>
+            <input type="email" ng-model="lista.model.Email" class="form-control" id="txtEmail" placeholder="Email">
+        </div>
+        -->
+        <div class="form-group-sm col-md-3 col-md-offset-9">
+            <button class="btn btn-primary btn-block" ng-click="lista.pag.currentPage=1;lista.Pesquisar();">PESQUISAR</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="panel panel-default" ng-init="lista.Pesquisar();">
+    <div class="panel-heading">Minhas Solicitações</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [1,10,20,50,100]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in filtros" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+        </div>
+    </div>
+
+    <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered margin0">
+        <thead>
+            <tr>
+                <th class="textRight" width="100">ID</th>
+                <th>Localidade</th>
+                <th>Motivo</th>
+                <th width="100">De</th>
+                <th width="100">Até</th>
+                <th width="100"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-hide="lista.data.length">
+                <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+            </tr>
+            <tr ng-repeat="item in lista.data">
+                <td class="textRight">{{item.Id | zeropadding:4}}</td>
+                <td>{{item.localidade | cut:true: 20:' ...'}}</td>
+                <td>{{item.motivo| cut:true: 20:' ...'}}</td>
+                <td class="textCenter">{{item.periodoViagemDe | date:'dd/MM/yyyy': 'UTC'}}</td>
+                <td class="textCenter">{{item.periodoViagemAte | date:'dd/MM/yyyy': 'UTC'}}</td>
+                <td class="textCenter">
+                    <a class="btn btn-primary btn-xs" href="/sistemas/solicitacao-adiantamentos/Adiantamento?id={{item.Id}}" data-toggle="tooltip" title="Alterar" ng-click="ModalImprimir(item)" ng-show="ShowImprimir(item)"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                    <a class="btn btn-warning btn-xs" href="/Umbraco/Surface/SolicitacaoAdiantamentoSurface/Imprimir/{{item.Id}}" target="_blank" data-toggle="tooltip" title="Imprimir" ng-click="ModalImprimir(item)" ng-show="ShowImprimir(item)"><i class="fa fa-print" aria-hidden="true"></i></a>
+                    <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Excluir" ng-click="ModalExcluir(item)" ng-show="ShowExcluir(item)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+            
+    <div class="panel-footer">
+        <!-- pager -->
+        <pagination changing="lista.Pesquisar();" pagining="lista.pag"></pagination>
+        <!-- pager -->
+    </div>
+</div>

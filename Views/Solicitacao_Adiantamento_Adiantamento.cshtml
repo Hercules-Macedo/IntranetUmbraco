@@ -1,0 +1,66 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.data.Repositories.Base;
+@using Intranet.Models;
+@using System.Globalization;
+@using System.Threading;
+@{
+
+    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("pt-BR");
+
+    Layout = "Solicitacao_Adiantamento_Master.cshtml";
+    ViewBag.activeTab = 1;
+
+    AdiantamentoViagemVM model = new AdiantamentoViagemVM();
+
+    var parametros = new BaseRepository<AdiantamentoViagemParametros>().Find(1);
+
+    var qId = Request.QueryString["Id"];
+    if (qId != null)
+    {
+        var e = new BaseRepository<AdiantamentoViagem>().Find(Int32.Parse(qId));
+        if (e != null)
+        {
+            model.Id = e.Id;
+
+            model.memberId = e.MemberId;
+            model.localidade = e.Localidade;
+            model.motivo = e.Motivo;
+            model.periodoViagemDe = e.PeriodoViagemDe;
+            model.periodoViagemAte = e.PeriodoViagemAte;
+
+            model.tipoPgto = e.TipoPgto;
+            model.banco = e.Banco;
+            model.agencia = e.Agencia;
+            model.contaCorrente = e.ContaCorrente;
+            model.situacaoFuncionario = e.situacaoFuncionario;
+
+            model.meio = e.Meio;
+
+            model.qtdKm         = e.QtdKm.ToString();
+            model.valorUntKm    = e.ValorUntKm.ToString("0.00");
+            model.valorTotalKm  = e.ValorTotalKm.ToString("0.00");
+
+            model.qtdDiarias            = e.QtdDiarias;
+            model.valorUntDiaria        = e.ValorUntDiaria.ToString("0.00");
+            model.valorTotalDiaria      = e.ValorTotalDiaria.ToString("0.00");
+            model.comentariosDiarias    = e.ComentariosDiarias;
+
+            model.qtdRefeicao           = e.QtdRefeicao;
+            model.valorUntRefeicao      = e.ValorUntRefeicao.ToString("0.00");
+            model.valorTotalRefeicao    = e.ValorTotalRefeicao.ToString("0.00");
+            model.comentariosRefeicao = e.ComentariosRefeicao;
+
+            model.outros = e.Outros;
+            model.outrosValor   = e.outrosValor.ToString("0.00");
+
+            model.CentroCusto = e.CentroCusto;
+            model.CentroCustoEmpresa = e.CentroCustoEmpresa;
+        }
+    }
+
+    model.valorUntKm = model.valorUntKm ?? parametros.ValorUntKm.ToString("0.00");
+    model.valorUntDiaria = model.valorUntDiaria ?? parametros.ValorUntDiaria.ToString("0.00");
+    model.valorUntRefeicao = model.valorUntRefeicao ?? parametros.ValorUntRefeicao.ToString("0.00");
+}
+
+@{ Html.RenderPartial("SolicitacaoAdiantamentoSurface/_adiantamento", model); }

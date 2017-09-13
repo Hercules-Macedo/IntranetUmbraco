@@ -1,0 +1,38 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+
+    ViewBag.Title = User.Identity.IsAuthenticated ? "Perfil" : "Login";
+    ViewBag.SubTitle = User.Identity.IsAuthenticated ?  "Alterar perfil do usuário":"Dados para acesso.";
+
+    var cols = !CurrentPage.barraLateral ? 9 : 12;
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @Html.Partial("~/views/Partials/_loginForm.cshtml", new Intranet.Models.LoginModel())
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="panel panel-default" style="display:none;">
+                <div class="panel-body">
+                    @Html.Partial("~/views/Partials/_esqueciSenhaForm.cshtml", new Intranet.Models.RecuperarSenhaModel())
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    Html.RenderPartial("_editProfile");
+}

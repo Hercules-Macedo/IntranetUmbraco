@@ -1,0 +1,28 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.PaginaSessaoOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+	Layout = "Master.cshtml";
+	var itens = Umbraco.Content(CurrentPage.Id).Children.Where("Visivel").OrderBy("SortOrder");
+	var first = itens.FirstOrDefault();
+}
+
+<link href="~/css/sistemas.css" rel="stylesheet" />
+	
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+@foreach(var item in itens){
+	<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading_@item.Id">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_@item.Id" aria-expanded="true" aria-controls="collapse_@item.Id">
+          @item.tituloSessao
+        </a>
+      </h4>
+    </div>
+    <div id="collapse_@item.Id" class="panel-collapse collapse @(item.Id != first.Id ? "in": "")" role="tabpanel" aria-labelledby="heading_@item.Id">
+      <div class="panel-body list-group">
+      	@item.conteudoSessao
+	  </div>
+    </div>
+  	</div>
+}
+</div>

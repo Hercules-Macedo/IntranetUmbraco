@@ -1,0 +1,77 @@
+﻿@model Intranet.Models.CaixinhaVM
+@using Intranet.Controllers.Surfaces
+
+
+<div class="modal fade" id="modal-novo" tabindex="-1" role="dialog" aria-labelledby="modal-novo-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-novo-label">Novo item</h4>
+            </div>
+            @{Html.EnableClientValidation();}
+            @{Html.EnableUnobtrusiveJavaScript();}
+            @using (Html.BeginUmbracoForm<CaixinhaSurfaceController>("Salvar", null, new { id = "form-caixinha" }))
+            {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model=>model.Id)
+            <div class="modal-body">
+                <div class="container-fluid">
+                   
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Superior, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.Superior,new List<SelectListItem>(), "SELECIONE", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Superior, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(model => model.Descricao, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Valor, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(model => model.Valor, new { @class = "form-control money" })
+                        @Html.ValidationMessageFor(model => model.Valor, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Motivo, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextAreaFor(model => model.Motivo, new { @class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.Motivo, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-excluir" tabindex="-1" role="dialog" aria-labelledby="modal-excluir-label">
+    @using (Html.BeginUmbracoForm<CaixinhaSurfaceController>("Excluir", null, new { id = "form-caixinha-excluir" }))
+    {
+    @Html.AntiForgeryToken()
+    @Html.Hidden("Id", Model.Id.ToString())
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-excluir-label">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <p>Deseja Excluir o Registro selecionado?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-danger">Excluir</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

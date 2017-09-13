@@ -1,0 +1,30 @@
+﻿<div class="p">
+<!--    
+    <ul class="pagination pagination margin0" ng-show="pagining.totalPages > 1" >
+        <li><a href="" ng-click="prevPage()">« Anterior</a></li>
+        <li ng-repeat="p in totalPages()" ng-class="{active:(p+1) == pagining.currentPage}"><a href="" ng-click="changePage(p+1)">{{ p + 1 }}</a></li>
+        <li><a href="" ng-click="nextPage()">Próxima »</a></li>
+    </ul>
+-->
+
+    <!-- pager -->
+    <ul ng-if="totalPages().length > 1" class="pagination">
+        <li ng-class="{disabled:pagining.currentPage === 1}">
+            <a ng-click="changePage(1)">Primeira</a>
+        </li>
+        <li ng-class="{disabled:pagining.currentPage === 1}">
+            <a ng-click="changePage(pagining.currentPage - 1)"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+        </li>
+        <li ng-repeat="page in totalPages()" ng-class="{active:pagining.currentPage === page}">
+            <a ng-click="changePage(page)">{{page}}</a>
+        </li>
+        <li ng-class="{disabled:pagining.currentPage === pagining.totalPages}">
+            <a ng-click="changePage(pagining.currentPage + 1)"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        </li>
+        <li ng-class="{disabled:pagining.currentPage === pagining.totalPages}">
+            <a ng-click="changePage(pagining.totalPages)">Última</a>
+        </li>
+    </ul>
+
+</div>
+

@@ -1,0 +1,58 @@
+﻿@using Intranet.Models;
+@model EquipamentoFinalizarVM
+
+@{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaEquipamentosSurfaceController>("Finalizar", null, new { id = "form-equipamento-finalizar" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(m => m.Id, new { value = "" })
+
+    <div class="modal fade" id="modalEquipamentoFinalizar" tabindex="-1" role="dialog" aria-labelledby="modalEquipamentoFinalizar-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalEquipamentofinalizar-label"><i class="fa fa-sign-in" aria-hidden="true"></i> Finalizar Reserva de Equipamento</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Id</th>
+                            <td colspan="3">{{ vw.ReservaId | zeropadding:4 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Equipamento</th>
+                            <td colspan="3">{{ vw.EquipamentoDescricao }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo</th>
+                            <td colspan="3">{{ vw.TipoDescricao }}</td>
+                        </tr>
+                        <tr>
+                            <th>Login</th>
+                            <td>{{ vw.LoginName }}</td>
+                            <th>Email</th>
+                            <td>{{ vw.Email }}</td>
+                        </tr>
+                        <tr>
+                            <th>De</th>
+                            <td>{{ vw.reservaDe | date:'dd/MM/yyyy' }}</td>
+                            <th>Até</th>
+                            <td>{{ vw.reservaAte | date:'dd/MM/yyyy' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Finalizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

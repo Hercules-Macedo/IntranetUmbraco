@@ -1,0 +1,42 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+}
+
+<link href="~/css/sistemas.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.8/jquery.mask.js"></script>
+
+<div ng-controller="sescoop.controllers.sistemas.reservaSalas">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <div class="list-group">
+                <div class="list-group-item"><strong>Funções do sistema</strong></div>
+                <a href="/sistemas/reserva-de-salas/" class="list-group-item @(ViewBag.activeTab == 0 ? "active" :"")">Minhas Reservas</a>
+            </div>
+
+            <div>
+                <hr />
+            </div>
+
+            @if (Roles.IsUserInRole("Reserva de Salas ADM"))
+            {
+                <div class="list-group">
+                    <div class="list-group-item"><strong>Funções administrativas</strong></div>
+                    <a href="/sistemas/reserva-de-salas/Salas/" class="list-group-item @(ViewBag.activeTab == 1 ? "active" :"")">Cadastro de Salas</a>
+                    <a href="/sistemas/reserva-de-salas/Reservas" class="list-group-item @(ViewBag.activeTab == 2 ? "active" :"")">Gerenciamento de reservas</a>
+                    <a href="/sistemas/reserva-de-salas/Copa" class="list-group-item @(ViewBag.activeTab == 4 ? "active" :"")">Gerenciamento de Copa</a>
+                    <a href="/sistemas/reserva-de-salas/inadimplentes" class="list-group-item @(ViewBag.activeTab == 3 ? "active" :"")">Reservas Pendêntes</a>
+                </div>
+            }
+        </div>
+        <div class="col-md-9">@RenderBody()</div>
+    </div>
+	
+    @{ Html.RenderPartial("ReservaSalas/_reservar", new Intranet.Models.SalaReservaVM()); }
+    @{ Html.RenderPartial("ReservaSalas/_cancelar", new Intranet.Models.SalaReservaCencelamentoVM() { DataCancelamento = DateTime.Now }); }
+    @{ Html.RenderPartial("ReservaSalas/_iniciar", new Intranet.Models.SalaReservaIniciarVM()); }
+    @{ Html.RenderPartial("ReservaSalas/_finalizar", new Intranet.Models.SalaReservaFinalizarVM()); }
+
+</div>

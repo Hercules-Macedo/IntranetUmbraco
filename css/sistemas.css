@@ -1,0 +1,91 @@
+body, html { background: #EEE; }
+hr{ border-color:#DDD !important; }
+/*
+table { background: #FFF; }
+table tr th { background: #008d3f !important; color: #fff; }
+.table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid #CCC;
+}
+*/
+li.div-dias{ display:table; width:100%; }
+
+li.div-dias div.item{
+    background:#FFF;
+    float:left;
+    padding: 3px;
+    border:1px solid #eee;
+    margin:4px;
+    box-shadow: 1px 1px 0px #AAA;
+    cursor:default;
+    width: 53px;
+}
+
+li.div-dias div.item:hover {
+        background:#eee;
+        cursor:pointer;
+        font-weight:normal;
+        box-shadow: -1px -1px 0px #AAA;
+}
+
+li.div-dias div.disable { 
+    background:#ddd !important;
+    color:#AAA !important;
+    border:1px solid #ccc;
+    box-shadow: 1px 1px 0px #ddd;
+}
+
+li.div-dias div.reservado { 
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#febbbb+0,fe9090+45,ff5c5c+100;Red+3D+%231 */
+	background: #febbbb; /* Old browsers */
+	background: -moz-linear-gradient(top, #febbbb 0%, #fe9090 45%, #ff5c5c 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #febbbb 0%,#fe9090 45%,#ff5c5c 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #febbbb 0%,#fe9090 45%,#ff5c5c 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#febbbb', endColorstr='#ff5c5c',GradientType=0 ); /* IE6-9 */
+	
+    color:#5b2828 !important;
+    border:1px solid #febbbb;
+    box-shadow: 1px 1px 0px #ddd;
+}
+
+li.div-dias div.disponivel { 
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#cdeb8e+0,a5c956+100;Green+3D+%232 */
+	background: #cdeb8e; /* Old browsers */
+	background: -moz-linear-gradient(top, #cdeb8e 0%, #a5c956 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #cdeb8e 0%,#a5c956 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #cdeb8e 0%,#a5c956 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cdeb8e', endColorstr='#a5c956',GradientType=0 ); /* IE6-9 */
+	
+    color:#333 !important;
+    border:1px solid #cdeb8e;
+    box-shadow: 1px 1px 0px #ddd;
+}
+li.div-dias div.disponivel:hover { 
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a5c956+0,cdeb8e+80,cdeb8e+80 */
+	background: #a5c956; /* Old browsers */
+	background: -moz-linear-gradient(top, #a5c956 0%, #cdeb8e 80%, #cdeb8e 80%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #a5c956 0%,#cdeb8e 80%,#cdeb8e 80%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #a5c956 0%,#cdeb8e 80%,#cdeb8e 80%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a5c956', endColorstr='#cdeb8e',GradientType=0 ); /* IE6-9 */
+}
+li.div-dias div.reservado:hover { 
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ff5c5c+1,fe9090+48,febbbb+84,febbbb+84 */
+background: #ff5c5c; /* Old browsers */
+background: -moz-linear-gradient(top, #ff5c5c 1%, #fe9090 48%, #febbbb 84%, #febbbb 84%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #ff5c5c 1%,#fe9090 48%,#febbbb 84%,#febbbb 84%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #ff5c5c 1%,#fe9090 48%,#febbbb 84%,#febbbb 84%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff5c5c', endColorstr='#febbbb',GradientType=0 ); /* IE6-9 */
+}
+
+.field-validation-valid { display: none; }
+.validation-summary-valid { display: none; }
+
+.pagination li a{ cursor:pointer; }
+
+/* comunicado */
+.comunicados div.list-group div.list-group-item div.data{ font-size:11px; margin-bottom:5px; }
+.comunicados div.list-group div.list-group-item div.assunto{ font-weight:900; }
+.comunicados div.list-group div.lido div.assunto{ font-weight:100; }
+.comunicados div.list-group div.list-group-item div.de{ font-size:11px; }
+.comunicados div.list-group div.list-group-item div.para{font-size:11px; }
+.comunicados div.list-group div.lido{ background:#EEE; }
+.comunicados div.list-group div.active{ background:#008d3f; cursor:pointer; }

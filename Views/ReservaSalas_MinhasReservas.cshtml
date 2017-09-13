@@ -1,0 +1,175 @@
+﻿@inherits UmbracoTemplatePage
+@{
+
+    var mes = DateTime.Now.Month;
+    var ano = DateTime.Now.Year;
+
+    string qMes = Request.QueryString["mes"];
+    string qAno = Request.QueryString["ano"];
+    if (qMes != null && qAno != null)
+    {
+        mes = Int32.Parse(qMes);
+        ano = Int32.Parse(qAno);
+    }
+
+    Layout = "ReservaSalas_Master.cshtml";
+    ViewBag.activeTab = 0;
+    ViewBag.title = "Minhas Reservas";
+    ViewBag.subtitle = "Reservas de salas para o Mês de " + HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(mes).ToString().ToFirstUpper();
+
+    var ListaSalasAtivas = new Intranet.data.Repositories.SalasRepository().ListarSalas().Where(s => (int)s.StatusSala == 0).ToList();
+
+    var reservasNoMes = new Intranet.data.Repositories.SalaReservaRepository().ListarPorMes(mes, ano,
+        new int[]{
+            (int)Intranet.Models.StatusSalaReserva.CONFIRMADA,
+            (int)Intranet.Models.StatusSalaReserva.ANDAMENTO }
+        );
+}
+@{ Html.RenderPartial("ReservaSalas/_filtros", new String[] { "ano", "mes" }); }
+
+<ul class="list-group">
+    @foreach (var item in ListaSalasAtivas)
+    {
+        if (Roles.IsUserInRole(item.permissao_reserva))
+        {
+            <li class="list-group-item"> <i class="fa fa-map-marker marginR10" aria-hidden="true"></i> <strong> @item.Descricao / @item.StatusSala </strong> </li>
+            <li class="list-group-item padding5 marginB20 div-dias">
+                @for (int i = 1; i <= DateTime.DaysInMonth(ano, mes); i++)
+                {
+                    DateTime data = new DateTime(ano, mes, i);
+                    var temReserva = reservasNoMes.Where(r => (data >= r.ReservaDe.Date && data <= r.ReservaAte.Date) && r.SalaId == item.Id);
+                    var tooltipString = String.Format("{0}, {1} de {2} de {3}", data.ToString("dddd", HTMLHelpers.cultureInfo()).ToFirstUpper(), i, HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(mes).ToString().ToFirstUpper(), ano);
+                    if (data < DateTime.Today.Date)
+                    {
+                        <div class="item disable text-center" data-toggle="tooltip" data-placement="top" title="@tooltipString - Não é possivel reservar data retroativa."> @i.ToString("00")<br /><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                    }
+                    else if (temReserva.Any())
+                    {
+                        <div class="item reservado text-center" data-toggle="tooltip" ng-click='ModalSalaReservar(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(new { Id = item.Id, Descricao = item.Descricao, Data = data, Reservas = temReserva.ToList() })) )' data-placement="top" title="@tooltipString"> @i.ToString("00")<br /><i class="fa fa-map-marker" aria-hidden="true"></i> </div>
+                    }
+                    else
+                    {
+                        <div class="item disponivel text-center" data-toggle="tooltip" ng-click='ModalSalaReservar(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(new { Id = item.Id, Descricao = item.Descricao, Data = data })) )' data-placement="top" title="@tooltipString"> @i.ToString("00")<br /><i class="fa fa-map-marker" aria-hidden="true"></i> </div>
+                    }
+
+                }
+            </li>
+        }
+    }
+</ul>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body" ng-init="lista.Pesquisar();">
+
+        <input type="hidden" ng-model="lista.model.MemberId" ng-init="lista.model.MemberId = @Members.GetCurrentMemberId();" />
+
+        <div class="row">
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="lista.model.Id" class="form-control" id="txtId" placeholder="Id">
+            </div>
+            <div class="form-group-sm col-md-6 marginT10">
+                <input type="text" ng-model="lista.model.sala" class="form-control" id="txtSala" placeholder="Sala">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="lista.model.tipo" class="form-control" id="txtTipo" placeholder="Tipo">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="lista.model.ReservaDe" class="form-control" id="txtDe" placeholder="De">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="lista.model.ReservaAte" class="form-control" id="txtAte" placeholder="De">
+            </div>
+            <div class="form-group-sm col-md-3 marginT10">
+                <select ng-model="lista.model.StatusSalaReserva" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="1">CONFIRMADA</option>
+                    <option value="2">ANDAMENTO</option>
+                    <option value="3">CANCELADA</option>
+                    <option value="4">CONCLUIDA</option>
+                </select>
+            </div>
+
+            
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <button class="btn btn-primary btn-block btn-sm" ng-click="lista.pag.currentPage=1;lista.Pesquisar();">PESQUISAR</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Minhas Reservas</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [10,20,50,100]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'R.Id', text:'Id'}, {value:'R.tipoReserva', text:'Tipo'}, {value:'R.StatusSalaReserva', text:'Status'},{value:'R.ReservaDe', text:'De'},{value:'R.ReservaAte', text:'Até'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-column-id="Id" data-type="numeric" width="30" data-identifier="true">ID</th>
+                            <th data-column-id="SalaDescricao">Sala</th>
+                            <th data-column-id="TipoReserva" data-order="desc">Tipo</th>
+                            <th data-column-id="ReservaDe" data-order="desc" data-converter="datetime">De</th>
+                            <th data-column-id="ReservaAte" data-order="desc" data-converter="datetime">Até</th>
+                            <th data-column-id="Status" data-formatter="link" data-sortable="false">Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-hide="lista.data.length">
+                            <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+                        </tr>
+                        <tr ng-repeat="item in lista.data">
+                            <td>{{item.Id | zeropadding:4}}</td>
+                            <td>{{item.SalaDescricao}}</td>
+                            <td>{{item.TipoReserva}}</td>
+                            <td>{{item.ReservaDe | date:'dd/MM/yyyy'}}</td>
+                            <td>{{item.ReservaAte | date:'dd/MM/yyyy'}}</td>
+                            <td>{{item.StatusSalaReserva | EnumStatusSalaReserva }}</td>
+                            <td class="textCenter">
+                                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Cancelar" ng-click="ModalSalaCancelar(item)" ng-show="ShowCancelar(item)"><i class="fa fa-times-circle" aria-hidden="true"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- pager -->
+                <pagination changing="lista.Pesquisar();" pagining="lista.pag"></pagination>
+                <!-- pager -->
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var ModalSalaReservar = function (Id, Descricao, Data) {
+
+        $('#form-sala-reserva input[type="hidden"]#MemberId').val(@Members.GetCurrentMemberId());
+        $('#form-sala-reserva input[type="hidden"]#SalaId').val(Id);
+        $('#form-sala-reserva p.nome-sala').html(Descricao);
+        $('#form-sala-reserva #ReservaDe').val(Data);
+        $('#form-sala-reserva #ReservaAte').val(Data);
+        $('#modalSalaReserva').modal('show');
+    };
+</script>

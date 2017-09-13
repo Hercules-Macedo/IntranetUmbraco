@@ -1,0 +1,16 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.AreaItem>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+	Layout = "Master.cshtml";
+}
+
+@{
+	var areas = CurrentPage.Children.Where("Visible").OrderBy("Name");
+}
+<ul  class="list-group">  
+	@foreach(var area in areas){
+		<li  class="list-group-item">
+			<a href="@area.Url">@area.Name</a>
+		</li>
+	}
+</ul>

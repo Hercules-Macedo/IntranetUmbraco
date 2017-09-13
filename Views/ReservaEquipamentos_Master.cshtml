@@ -1,0 +1,38 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+}
+
+<link href="~/css/sistemas.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.8/jquery.mask.js"></script>
+
+<div ng-controller="sescoop.controllers.sistemas.reservaEquipamentos">
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <div class="list-group-item"><strong>Funções do sistema</strong></div>
+                <a href="/sistemas/reserva-de-equipamentos/" class="list-group-item @(ViewBag.activeTab == 0 ? "active" :"")">Minhas Reservas</a>
+            </div>
+            <div>
+                <hr />
+            </div>
+            @if (Roles.IsUserInRole("Reserva de Equipamentos ADM"))
+            {
+                <div class="list-group">
+                    <div class="list-group-item"><strong>Funções administrativas</strong></div>
+                    <a href="/sistemas/reserva-de-equipamentos/Equipamentos/" class="list-group-item @(ViewBag.activeTab == 1 ? "active" :"")">Cadastro de Equipamentos</a>
+                    <a href="/sistemas/reserva-de-equipamentos/Reservas" class="list-group-item @(ViewBag.activeTab == 2 ? "active" :"")">Gerenciamento de reservas</a>
+                    <a href="/sistemas/reserva-de-equipamentos/inadimplentes" class="list-group-item @(ViewBag.activeTab == 3 ? "active" :"")">Gerenciamento inadimplentes</a>
+                </div>
+            }
+        </div>
+        <div class="col-md-9">@RenderBody()</div>
+    </div>
+
+    @{ Html.RenderPartial("ReservaEquipamentos/_reservar", new Intranet.Models.EquipamentoReservaVM()); }
+    @{ Html.RenderPartial("ReservaEquipamentos/_cancelar", new Intranet.Models.EquipamentoReservaCancelarVM() { DataCancelamento=DateTime.Now, MotivoCancelamento = String.Empty }); }
+    @{ Html.RenderPartial("ReservaEquipamentos/_iniciar", new Intranet.Models.EquipamentoIniciarVM()); }
+    @{ Html.RenderPartial("ReservaEquipamentos/_finalizar", new Intranet.Models.EquipamentoFinalizarVM()); }
+
+</div>

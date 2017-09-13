@@ -1,0 +1,87 @@
+﻿@inherits UmbracoTemplatePage<Umbraco.Web.PublishedContentModels.CaixinhaItem>
+@{
+    var ResponsavelFinanceiroId = (((Umbraco.Core.Models.IPublishedProperty[])((Umbraco.Web.Models.DynamicPublishedContent)CurrentPage).Parent.Properties)[6]).Value;
+    var Responsavel = Members.GetById((int)ResponsavelFinanceiroId);
+    var Solicitante = Members.GetById(CurrentPage.Solicitante);
+    var pValue = CurrentPage.Properties[2];
+    var x = Model;
+
+    Layout = "~/Views/Shared/Relatorios/_relatorio_header.cshtml";
+    ViewBag.Title = "Ficha de Prestação de Contas";
+    ViewBag.Empresa = Solicitante.Empresa;
+}
+
+<div class="container">
+    <table class="table table-bordered">
+        <tr>
+            <td width="50%">
+                <h4>SOLICITAÇÃO DE CAIXINHA</h4>
+            </td>
+            <td class="text-center" width="50%">
+                <h4>Nº @CurrentPage.Id.ToString("0000000") </h4>
+            </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+            <strong>Solicitado Em:</strong> @CurrentPage.CreateDate
+        </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @CurrentPage.Motivo
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>Solicitante: </strong> @( Members.GetById(CurrentPage.Solicitante).Name )
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>Superior: </strong> @( Members.GetById(CurrentPage.Superior).Name )
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>Responsável Financeiro: </strong> @( Members.GetById((int)ResponsavelFinanceiroId).Name ) 
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>Valor: </strong> R$ @CurrentPage.ValorStr
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <h3>Assinaturas:</h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                
+                <table class="table table-condensed marginT30">
+                    <tr>
+                        <td class="text-center"> _____________________________________________ </td>
+                        <td class="text-center"> _____________________________________________ </td>
+                        <td class="text-center"> _____________________________________________ </td>
+                    </tr>
+                    <tr>
+                        <th class="text-center">@( Members.GetById(CurrentPage.Solicitante).Name)</th>
+                        <th class="text-center">@( Members.GetById(CurrentPage.Superior).Name)</th>
+                        
+                        @if (Solicitante.Empresa == "SESCOOP/SP")
+                        {
+                            <th class="text-center">@( Members.GetById((int)ResponsavelFinanceiroId).Name)</th>
+                        }
+                        else
+                        {
+                            <th class="text-center"> Responsável na @Solicitante.Empresa </th>
+                        }
+
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+</table>
+</div>

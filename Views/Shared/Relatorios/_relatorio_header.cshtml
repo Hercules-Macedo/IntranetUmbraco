@@ -1,0 +1,84 @@
+﻿@{ 
+    dynamic Empresa = new
+    {
+        Nome = "SESCOOP/SP",
+        Logo = "/media/images/logo.png",
+        NomeCompleto = "Serviço Nacional de Aprendizagem do Cooperativismo do Estado de São Paulo",
+        Site = "www.sescoopsp.org.br",
+        CNPJ = "07.042.333/0001-22",
+        Telefone = "11 3146-6200",
+        Fax = "11 3146-6222",
+        Endereco = "Rua Treze de Maio, 1376 - Bela Vista - CEP: 01327-002 - São Paulo/SP"
+    };
+
+    if (ViewBag.Empresa == "OCESP")
+    {
+        Empresa = new
+        {
+            Nome = "OCESP",
+            Logo = "/media/images/logo-sistema-ocesp-azul-50.png",
+            CNPJ = "63.057.855/0001-79",
+            NomeCompleto = "Organização das Cooperativas do Estado de São Paulo",
+            Site = "www.ocesp.org.br",
+            Endereco = "Rua Treze de Maio, 1376 - Bela Vista - CEP: 01327-002 - São Paulo/SP",
+            Telefone = "11 3146-6200",
+            Fax = "11 3146-6222"
+        };
+    }
+
+    if (ViewBag.Empresa == "FESCOOP/SP")
+    {
+        Empresa = new
+        {
+            Nome = "FESCOOP/SP",
+            Logo = "/media/images/fescoop.png",
+            CNPJ = "11.699.151/0001-04",
+            NomeCompleto = "Federação dos Sindicatos das Cooperativas do Estado de São Paulo",
+            Site = "",
+            Endereco = "Rua Joaquim Galvão de França, 4",
+            Telefone = "11 3146-6282",
+            Fax = ""
+        };
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="~/css/united/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/relatorios.css" rel="stylesheet" />
+
+    <meta name="viewport" content="width=device-width" />
+
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    @if (ViewBag.Empresa != "")
+    {
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <img class="marginT10 marginB10" src="@Empresa.Logo" />
+                    </td>
+                </tr>
+                <tr class="text-center no-print">
+                    <td colspan="4"> <button type="button" class="btn btn-default" onclick="javascript:print();">IMPRIMIR</button> </td>
+                </tr>
+                <tr>
+                    <td> @RenderBody() </td>
+                </tr>
+                <tr>
+                    <td class="text-center">
+                        @Empresa.Endereco / @Empresa.Telefone
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    } else {
+        @RenderBody()
+    }
+</body>
+</html>
+
+

@@ -1,0 +1,25 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "ReservaEquipamentos_Master.cshtml";
+    ViewBag.activeTab = 1;
+
+    Intranet.Models.EquipamentoVM model = new Intranet.Models.EquipamentoVM();
+
+    var qId = Request.QueryString["Id"];
+    if(qId != null)
+    {
+        var e = new Intranet.data.Repositories.EquipamentosRepository().Find(Int32.Parse(qId));
+        if(e != null){
+            model.Id = e.Id;
+            model.EquipamentoTipoId = e.EquipamentoTipoId;
+            model.Ativo = e.Ativo;
+            model.NumeroSerie = e.NumeroSerie;
+            model.Descricao = e.Descricao;
+            model.Modelo = e.Modelo;
+            model.DataCadastro = e.DataCadastro ?? new DateTime();
+            model.StatusEquipamento = (int)e.StatusEquipamento;
+       }
+    }
+}
+
+@{ Html.RenderPartial("ReservaEquipamentos/_equipamento", model); }

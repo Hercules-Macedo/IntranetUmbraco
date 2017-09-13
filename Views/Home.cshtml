@@ -1,0 +1,82 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Globalization;
+@{
+
+    var profileModel = Members.GetById(Members.GetCurrentMemberId());
+
+    Layout = "Master.cshtml";
+    var mymember = Members.GetCurrentMember();
+}
+
+<div class="row" ng-controller="HomeCtrl">
+
+    <div class="col-md-12 marginB20">
+        <!-- <img class="" width="100%" src="http://www.tunasgroup.com/wp-content/uploads/2015/11/banner-web-get-your-dream-car-with-1920-x-600.png" /> -->
+        @{ Html.RenderPartial("_homeBanners"); }
+    </div>
+
+    <div class="col-md-12 margT30">
+        <h1 class="title-section" ng-click="abrirNoticias();"> <i class="fa fa-newspaper-o" aria-hidden="true"></i> Notícias </h1>
+        @{ Html.RenderPartial("_noticiasUltimas3"); }
+    </div>
+    <!--
+    <div class="col-md-12 textRight">
+            <button class="btn btn-default">Mais Notícias</button>
+    </div>
+    -->
+
+    <div class="col-md-12">
+        <hr />
+    </div>
+
+
+    <div class="col-sm-3 animate-it" data-delay="300">
+        <div ng-include="'/scripts/views/pessoas/_pessoasAniversariantes.html'"></div>
+    </div>
+
+    <div class="col-sm-5 animate-it" data-delay="300">
+        <div ng-include="'/scripts/views/noticias/_noticiasLista.html'"></div>
+    </div>
+
+    <div class="col-sm-4 animate-it" data-delay="200">
+        <div ng-include="'/scripts/views/pessoas/_pessoasLista.html'"></div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row" ng-include="'/scripts/views/home/_sistemas.html'"></div>
+    </div>
+
+    <div class="col-md-12">
+        <hr />
+    </div>
+
+    <div class="col-md-6" data-delay="400">
+        <div class='panel panel-default'>
+            <div class="panel-heading"> <i class="fa fa-calendar" aria-hidden="true"></i> Agenda de eventos</div>
+            <div class="panel-body" ng-controller="CalendarDemoCtrl" ng-init="startEvents()">
+                <calendar ng-model="currentDate"
+                          calendar-mode="mode"
+                          event-source="eventSource"
+                          range-changed="rangeChanged(startTime, endTime)"
+                          event-selected="onEventSelected(event)"
+                          time-selected="onTimeSelected(selectedTime)">
+                </calendar>
+
+
+
+            </div>
+            <div class="panel-footer">
+                <a href="/publicacoes/agenda-corporativa/" class="btn btn-primary btn-sm">Agenda Corporativa</a>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="col-md-6" data-delay="400">
+        <input type="hidden" name="HomeVideo" id="HomeVideo" value="@CurrentPage.video" />
+        <div ng-include="'/scripts/views/home/_youtube_chanel.html'"></div>
+    </div>
+
+</div>

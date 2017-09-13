@@ -1,0 +1,107 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+@{
+    var profileModel = Members.GetCurrentMemberProfileModel();
+    var pic = Members.GetCurrentMember().GetCropUrl("pic", "ProfileBig");
+    var avatar = String.IsNullOrWhiteSpace(pic) ? "/media/images/user.png" : pic;
+
+    using (Html.BeginUmbracoForm<Intranet.Controllers.LoginSurfaceController>("HandleUpdateProfile"))
+    {
+
+        <div class="panel panel-default">
+            <div class="panel-heading">@profileModel.Name</div>
+            <div class="panel-body">
+
+                <div class="img-polaroid col-md-2 marginT30">
+                    <img id="imgProfile" style="box-shadow: 0px 0px 3px 3px #dadada; background:Red;" class="img-circle" src="@avatar" />
+                </div>
+
+                <div class="img-polaroid col-md-10">
+
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label class="control-label" for="form-group-input">Nome</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@profileModel.Name" disabled="disabled" placeholder="Nome">
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label" for="form-group-input">Email</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@profileModel.Email" disabled="disabled" placeholder="E-Mail">
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label" for="form-group-input">Ramal</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@profileModel.MemberProperties.Where(p => p.Alias == "ramal").FirstOrDefault().Value" disabled="disabled" placeholder="Ramal">
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label" for="form-group-input">Empresa</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@profileModel.MemberProperties.Where(p => p.Alias == "empresa").FirstOrDefault().Value" disabled="disabled" placeholder="E-Mail">
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label" for="form-group-input">Cargo</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@profileModel.MemberProperties.Where(p => p.Alias == "cargo").FirstOrDefault().Value" disabled="disabled" placeholder="Ramal">
+                        </div>
+
+                    </div>
+
+                    @{ dynamic an = Newtonsoft.Json.JsonConvert.DeserializeObject(profileModel.MemberProperties.Where(p => p.Alias == "divisao").FirstOrDefault().Value);  }
+
+                    <div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label" for="form-group-input">Núcleo</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@an.Area.Name" disabled="disabled" placeholder="E-Mail">
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label" for="form-group-input">Área</label>
+                            <input type="text" class="form-control" id="form-group-input" value="@an.Nucleo.Name" disabled="disabled" placeholder="Ramal">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        @*<div class="panel panel-default">
+            <div class="panel-body textRight">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>*@
+
+    }
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/dropzone.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/min/basic.min.css" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        Dropzone.autoDiscover = false;
+        var arrOfImageName = [];
+        $("#imgProfile").dropzone({
+            url: "/umbraco/surface/LoginSurface/ChangeImageProfile",
+            addRemoveLinks: false,
+            success: function (file, response) {
+                window.location = "";
+            },
+            error: function () {
+                alert("Woops something went worng !");
+            },
+            complete: function () {
+                $(".dz-preview").remove();
+            }
+        });
+    });
+</script>

@@ -1,0 +1,93 @@
+﻿@model String[]
+@{
+    Layout = null;
+
+    var mes = DateTime.Now.Month;
+    var ano = DateTime.Now.Year;
+
+    string qMes = Request.QueryString["mes"];
+    string qAno = Request.QueryString["ano"];
+    string status = Request.QueryString["status"] ?? "0";
+    string login = Request.QueryString["login"] ?? "";
+
+    if (qMes != null && qAno != null)
+    {
+        mes = Int32.Parse(qMes);
+        ano = Int32.Parse(qAno);
+    }
+
+    var m = Model ?? new String[] { };
+
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form action="" method="get">
+
+            @if (m.Contains("login"))
+            {
+                <div class="form-group col-md-3 margin0">
+                    @Html.TextBox("login", login, new { @class = "form-control", placeholder = "Login" })
+                </div>
+            }
+
+
+
+            @if (m.Contains("mes"))
+            {
+                <div class="form-group col-md-3 margin0">
+                    @{
+                        var listaMeses = new List<SelectListItem>();
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            listaMeses.Add(new SelectListItem() { Text = HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(i).ToUpper(), Value = i.ToString(), Selected = (i == mes) });
+                        }
+                    }
+                    @Html.DropDownList("mes", listaMeses, new { @class = "form-control" })
+                </div>
+                        }
+
+
+            @if (m.Contains("ano"))
+            {
+                <div class="form-group col-md-2 margin0">
+                    @{
+                        var listaAnos = new List<SelectListItem>();
+                        for (int i = 2016; i < 2030; i++)
+                        {
+                            listaAnos.Add(new SelectListItem() { Text = i.ToString(), Value = i.ToString(), Selected = (i == ano) });
+                        }
+                    }
+                    @Html.DropDownList("ano", listaAnos, new { @class = "form-control" })
+                </div>
+                        }
+
+            @if (m.Contains("status"))
+            {
+                <div class="form-group col-md-2 margin0">
+                    @{
+                        var ListaStatus = new List<SelectListItem>();
+                        ListaStatus.Add(new SelectListItem() { Text = "TODOS", Value = "" });
+                        foreach (Intranet.Models.StatusEquipamentoReserva foo in Enum.GetValues(typeof(Intranet.Models.StatusEquipamentoReserva)))
+                        {
+                            ListaStatus.Add(new SelectListItem()
+                            {
+                                Text = foo.ToString(),
+                                Value = ((int)foo).ToString(),
+                                Selected = ((int)foo).ToString() == status
+                            });
+                        }
+                    }
+                    @Html.DropDownList("status", ListaStatus, new { @class = "form-control" })
+                </div>
+                        }
+
+
+            <input type="hidden" name="OrderBy" value="R.Id" />
+            <input type="hidden" name="OrderDirection" value="DESC" />
+
+            <input type="submit" class="col-md-1 btn btn-primary" value="OK" />
+
+        </form>
+    </div>
+</div>

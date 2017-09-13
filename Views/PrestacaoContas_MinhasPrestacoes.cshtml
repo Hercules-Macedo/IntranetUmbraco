@@ -1,0 +1,63 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.data.Repositories.Base 
+@using Intranet.Models
+@{
+    Layout = "PrestacaoContas_Master.cshtml";
+    var itens = new BaseRepository<PrestacaoDeContasVM>().dbContext.Database.Fetch<PrestacaoDeContasVM>(
+        new Umbraco.Core.Persistence.Sql("SELECT * FROM [dbo].[sisPrestacaoDeContas] WHERE memberId = @0  order by data desc", Members.GetCurrentMemberId() )
+    ).ToList();
+}
+
+<div class="panel panel-default">
+    <div class="panel-body text-right">
+        <button class="btn btn-primary btn-sm" ng-click="novo()">NOVA PRESTAÇÃO DE CONTAS</button>
+    </div>
+</div>
+
+<hr />
+
+<div class="panel panel-default">
+    <div class="panel-heading">Minhas Prestações de conta</div>
+    <table class="table table-bordered">
+        <tr>
+            <th width="100">Código</th>
+            <th width="100">Adiantamento</th>
+            <th>Motivo</th>
+            <th width="120">Data</th>
+            <th width="120"></th>
+        </tr>
+
+        @if (!itens.Any())
+        {
+            <tr>
+                <td colspan="5">Nenhum item encontrado.</td>
+            </tr>
+        }
+
+        @foreach (var item in itens)
+        {
+            <tr>
+                <td>@item.Id.ToString("000000")</td>
+                <td class="text-center">
+                    @if (item.AdiantamentoViagemId.HasValue)
+                    {
+                        <a target="_blank" class="btn btn-block btn-primary btn-xs" href="/sistemas/solicitacao-adiantamentos/Adiantamento?id=@item.AdiantamentoViagemId">@item.AdiantamentoViagemId.Value.ToString("00000")</a>
+                    }
+                </td>
+                <td>@item.Motivo</td>
+                <td>@(item.Data.Value.ToString("dd/MM/yyyy"))</td>
+                <td class="text-center">
+                    <button type="button" ng-click='alterar(@(Newtonsoft.Json.JsonConvert.SerializeObject(item)))' class="btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i></button>
+                    <button type="button" ng-click="itens(@item.Id);" class="btn btn-primary btn-xs"><i class="fa fa-list-ul" aria-hidden="true"></i></button>
+                    <button type="button" ng-click="excluir(@item.Id);" class="btn btn-danger btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                    @*<button type="button" ng-click="alterar(@item.Id);" class="btn btn-default btn-xs"><i class="fa fa-refresh" aria-hidden="true"></i></button>*@
+                    <a target="_blank" href="/umbraco/Surface/PrestacaoDeContasSurface/Imprimir/@item.Id" class="btn btn-default btn-xs"><i class="fa fa-print" aria-hidden="true"></i></a>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+@{ Html.RenderPartial("PrestacaoDeContasSurface/_prestacao", new PrestacaoDeContasVM()); }
+@{ Html.RenderPartial("PrestacaoDeContasSurface/_prestacao_itens", new PrestacaoDeContasItemVM()); }

@@ -1,0 +1,46 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.AuditoriaOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+    var selection = Umbraco.Content(CurrentPage.Id).Children("auditoriaItem").Where("Visible");
+    var query = Request["query"];
+    if (!String.IsNullOrWhiteSpace(query))
+    {
+        selection = Umbraco.TypedSearch(query, true, "").Where(d => d.DocumentTypeAlias == "auditoriaItem").ToList();
+    }
+
+}
+
+<div class="panel panel-default">
+<div class="panel-body">
+    <form action="/documentos/relatorio-de-auditoria/" method="get">
+        <div class="form-group-sm col-md-10 margin0 padding0">
+            <input type="text" class="form-control" name="query" value="@query" placeholder="Procurar..." />
+        </div>
+        <button class="col-md-2 btn btn-primary btn-sm" type="submit">Procurar</button>
+    </form>
+</div>
+</div>
+
+<div class='panel panel-default'>
+<div class="panel-heading"> Lista de documentos de Auditoria. </div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th> Descrição </th>
+			<th width="150"> Data da Auditoria </th>
+            <th width="150" class="textCenter"> Download </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in selection)
+        {
+            <tr>
+                <td>@item.Descricao</td>
+				<td>@item.Data.ToString("dd/MM/yyyy")</td>
+                <td class="textCenter"><a href="@(item.Anexo??"#")"> <i class="fa fa-cloud-download" aria-hidden="true"></i> Download </a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>

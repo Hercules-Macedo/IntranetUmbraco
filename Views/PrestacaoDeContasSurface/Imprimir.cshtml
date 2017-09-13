@@ -1,0 +1,136 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.RecibosOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+
+    var obj     = (Intranet.Models.PrestacaoDeContas)ViewBag.Objeto;
+    var Items   = (List<Intranet.Models.PrestacaoDeContasItem>)ViewBag.Items;
+    var usuario = Members.GetById(obj.MemberId);
+    var adiantamento = (Intranet.Models.AdiantamentoViagem)ViewBag.Adiantamento;
+
+    double total = 0;
+    if(adiantamento != null) {
+        total = (Items.Sum(x => x.Valor)) - (adiantamento.ValorTotalKm + adiantamento.ValorTotalDiaria + adiantamento.ValorTotalRefeicao + adiantamento.outrosValor);
+    }
+
+    Layout = "~/Views/Shared/Relatorios/_relatorio_header.cshtml";
+    ViewBag.Title = "Ficha de Prestação de Contas";
+    ViewBag.Empresa = obj.CentroCustoEmpresa;
+
+}
+<div class="container">
+    <table class="table table-bordered marginT30">
+        <tr>
+            <td width="50%" colspan="2">
+                <h4> PRESTAÇÃO DE CONTAS </h4>
+            </td>
+            <td  width="50%">
+                <h4>Nº: @obj.Id.ToString("0000000") </h4>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3"> <strong>MOTIVO:</strong> @obj.Motivo </td>
+        </tr>
+        <tr>
+            <td colspan="3"> <strong>NOME:</strong> @usuario.Name.ToUpper() </td>
+        </tr>
+        <tr>
+            <td colspan="3"> <strong>CARGO:</strong> @(usuario.GetPropertyValue<string>("Cargo")) </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="text-center">
+                <h5 class="text-left">Adiantamento:</h5>
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="220">Localidade: </th>
+                        <td class="textLeft">@obj.Localidade</td>
+                        <th class="textLeft" width="290">Período de viagem</th>
+                    </tr>
+                    <tr>
+                        <th width="220">Motivo: </th>
+                        <td class="textLeft">@obj.Motivo</td>
+                        <td class="textLeft">@(obj.PeriodoViagemDe.Value.ToString("dd/MM/yyyy")) até @(obj.PeriodoViagemAte.Value.ToString("dd/MM/yyyy"))</td>
+                    </tr>
+                    <tr>
+                        <th width="220">Centro de Custos: </th>
+                        <td colspan="2" class="textLeft">@obj.CentroCustoEmpresa / @obj.CentroCusto</td>
+                    </tr>
+                </table>
+
+                <table class="table table-bordered">
+
+                    @if (obj.TipoPgto == "CONTA CORRENTE" || obj.TipoPgto == "CONTA POUPANÇA")
+                    {
+                        <tr>
+                            <th colspan="4">Pagamento</th>
+                        </tr>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Banco</th>
+                                    <th>Agência</th>
+                                    <th>Conta Corrente</th>
+                                </tr>
+                                <tr>
+                                    <td>@obj.TipoPgto</td>
+                                    <td width="150">@obj.Banco</td>
+                                    <td width="150">@obj.Agencia</td>
+                                    <td width="150">@obj.ContaCorrente</td>
+                                </tr>
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th width="33%">Descrição</th>
+            <th width="33%">Recibo</th>
+            <th>Valor</th>
+        </tr> 
+        @foreach (var item in Items)
+        {
+           <tr>
+               <th width="33%">@item.Descricao</th>
+               <td width="33%">@item.Recibo</td>
+               <td class="text-right" >@string.Format("{0:C}", item.Valor)</td>
+           </tr> 
+        }
+        <tr>
+            <th colspan="2" class="text-right">Total</th>
+            <td class="text-right" >@string.Format("{0:C}", Items.Sum(x=>x.Valor))</td>
+        </tr> 
+        <tr>
+            <td colspan="3" style="vertical-align:middle; height:80px;">
+                <small> Obs: Anexar Comprovantes, conforme Portaria CAD nº 006, de 24/09/2003</small>
+            </td>
+        </tr>
+    </table>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th class="text-right">Valor total das despesas</th>
+            <td class="text-right" width="180">@string.Format("{0:C}", Items.Sum(x => x.Valor))</td>
+        </tr>
+        @if(ViewBag.adiantamento != null) { 
+        <tr>
+            <th class="text-right">Valor Recebido(Solicitação de Adiantamentos)</th>
+            <td class="text-right" width="180">@string.Format("{0:C}", adiantamento.ValorTotalKm + adiantamento.ValorTotalDiaria + adiantamento.ValorTotalRefeicao + adiantamento.outrosValor)</td>
+        </tr>
+        
+        <tr>
+            <th class="text-right">Valor a @(total > 0 ? "receber" : "restituir" )</th>
+            <td class="text-right" width="180">@(string.Format("{0:C}", total))</td>
+        </tr>
+        }
+    </table>
+    <table class="table table-bordered marginT30 marginB30">
+        <tr>
+            <td width="25%" class="text-center"> Data </td>
+            <td width="25%" class="text-center"> ___________________________________ </td>
+            <td width="25%" class="text-center"> ___________________________________ </td>
+            <td width="25%"></td>
+        </tr>
+        <tr>
+            <td class="text-center">@DateTime.Now.ToString("dd/MM/yyyy")</td>
+            <td class="text-center">@usuario.Name</td>
+            <td class="text-center">Superior</td>
+            <td></td>
+        </tr>
+    </table>
+</div>

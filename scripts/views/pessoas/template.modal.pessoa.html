@@ -1,0 +1,60 @@
+﻿<!-- Modal -->
+<div class="modal fade" role="dialog">
+    <div class="modal-dialog"  style="width:430px;">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom:0px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <p>
+                    Perfil de Usuário
+                </p>
+            </div>
+            <div class="modal-body body-card text-center">
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <img src="/media/images/img-bg-info.png" class="img-responsive img-responsive-info" />
+                    </div>
+
+                    <img src="{{ member.pic }}" class="img-circle card-img-profile-info">
+                    <h3 class='card-nome'> {{member.nome | cut:true: 30:' ...'}} </h3>
+                    <p><small>{{member.cargo | cut:true: 40:' ...'}}</small></p>
+                    <p><small>{{member.empresa | cut:true: 40:' ...'}}</small></p>
+                    <hr />
+                    <p><a href="mailto:{{member.email}}">{{member.email}}</a></p>
+                    <h4>Ramal:{{member.ramal}}</h4>
+
+                    <hr />
+
+                    <p><strong>Departamento:</strong></p>
+                    <p>{{member.area}} / {{member.nucleo}}</p>
+
+                    <!--
+                    <div class="container-fluid text-center">
+
+                    <img src="{{ member.pic }}" style="border:5px solid #EEE;" class="img-circle marginB20" />
+                    <h3>{{ member.nome }}</h3>
+                    <h5>{{ member.cargo }}</h5>
+
+                    <hr />
+                    <p><strong>Email:</strong> <a href="mailto:{{member.email}}">{{member.email}}</a></p>
+                    <p><strong>Ramal:</strong> {{member.ramal}}</p>
+
+                    <hr />
+                    <p><strong>Área:</strong> {{member.area}}</p>
+                    <p><strong>Departamento:</strong> {{member.nucleo}}</p>
+
+                    </div>
+                    -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <but
+                <button type="submit" class="btn btn-primary pull-left" data-dismiss="modal"><span class="fa fa-remove"></span> Fechar </button>
+  </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->

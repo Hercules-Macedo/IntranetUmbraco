@@ -1,0 +1,29 @@
+﻿<div ng-controller="WeatherCtrl" ng-init="weather.lista()" class='panel panel-default'>
+    <div class="panel-heading">Previsão do Tempo</div>
+    <div class="panel-body">
+        <div class="weather textCenter">
+            <p class="p1">São Paulo, SP</p>
+            <p class="p2">{{weatherData.item.condition.temp}} °C</p>
+            <p class="p3">{{weatherData.item.forecast[0].low}} / {{weatherData.item.forecast[0].high}}</p>
+            <p class="p4">min/max</p>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="textCenter"> Dia </th>
+                        <th class="textCenter"> Minima </th>
+                        <th class="textCenter"> Maxima </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="dia in weatherData.item.forecast | limitTo:8">
+                        <td>{{weather.addDay($index)}}</td>
+                        <td>{{dia.low}} °C</td>
+                        <td>{{dia.high}} °C</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

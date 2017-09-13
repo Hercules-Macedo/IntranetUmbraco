@@ -1,0 +1,49 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+}
+
+<link href="~/css/sistemas.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.8/jquery.mask.js"></script>
+
+<div ng-controller="sescoop.controllers.sistemas.reservaVeiculos">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <div class="list-group">
+                <div class="list-group-item"><strong>Funções do sistema</strong></div>
+                <a href="/sistemas/reserva-de-Veiculos/" class="list-group-item @(ViewBag.activeTab == 0 ? "active" :"")">Minhas Reservas</a>
+            </div>
+
+            <div>
+                <hr />
+            </div>
+
+            @if (Roles.IsUserInRole("Reserva de Veiculos ADM"))
+            {
+                <div class="list-group">
+                    <div class="list-group-item"><strong>Funções administrativas</strong></div>
+                    <a href="/sistemas/reserva-de-Veiculos/Veiculos/" class="list-group-item @(ViewBag.activeTab == 1 ? "active" :"")">Cadastro de Veiculos</a>
+                    <a href="/sistemas/reserva-de-Veiculos/Reservas" class="list-group-item @(ViewBag.activeTab == 2 ? "active" :"")">Gerenciamento de Reservas</a>
+                    <a href="/sistemas/reserva-de-veiculos/manutencao/" class="list-group-item @(ViewBag.activeTab == 3 ? "active" :"")">Gerenciamento de Manutenção</a>
+                    @*<a href="/sistemas/reserva-de-veiculos/despesas/" class="list-group-item @(ViewBag.activeTab == 4 ? "active" :"")">Gerenciamento de Despesas</a>
+                    <a href="/sistemas/reserva-de-veiculos/inadimplentes" class="list-group-item @(ViewBag.activeTab == 5 ? "active" :"")">Gerenciamento Inadimplentes</a>*@
+                </div>
+            }
+        </div>
+        
+        <div class="col-md-9">
+            @RenderBody()
+        </div>
+
+    </div>
+    
+    @{ Html.RenderPartial("ReservaVeiculos/_reservar", new Intranet.Models.VeiculoReservaVM()); }
+    @{ Html.RenderPartial("ReservaVeiculos/_cancelar", new Intranet.Models.VeiculoReservaCancelamentoVM()); }
+    @{ Html.RenderPartial("ReservaVeiculos/_iniciar", new Intranet.Models.VeiculoReservaIniciarVM()); }
+    @{ Html.RenderPartial("ReservaVeiculos/_finalizar", new Intranet.Models.VeiculoReservaFinalizarVM()); }
+    @{ Html.RenderPartial("ReservaVeiculos/_manutencao", new Intranet.Models.VeiculoManutencaoVM()); }
+    @{ Html.RenderPartial("ReservaVeiculos/_manutencao_excluir", new Intranet.Models.IntVM()); }
+    
+</div>

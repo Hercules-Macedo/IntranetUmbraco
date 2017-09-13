@@ -1,0 +1,206 @@
+﻿@model IContent
+@using EscritaPorExtenso.Moeda;
+
+@{
+    Layout = "~/Views/Shared/Relatorios/_relatorio_header.cshtml";
+    ViewBag.Title = "Ficha de Prestação de Contas";
+    ViewBag.Empresa = "";
+
+    var MembersService = (Umbraco.Web.Security.MembershipHelper)ViewBag.MembersService;
+
+    var Motivo = Model.GetValue<string>("motivo");
+    if (Motivo == "Outro")
+    {
+        Motivo = Model.GetValue<string>("outroMotivo");
+    }
+
+
+    dynamic Empresa = new
+    {
+        Nome = "SESCOOP/SP",
+        Logo = "/media/images/logo.png",
+        NomeCompleto = "Serviço Nacional de Aprendizagem do Cooperativismo do Estado de São Paulo",
+        Site = "www.sescoopsp.org.br",
+        CNPJ = "07.042.333/0001-22",
+        Telefone = "11 3146-6200",
+        Fax = "11 3146-6222",
+        Endereco = "Rua Treze de Maio, 1376 - Bela Vista - CEP: 01327-002 - São Paulo/SP"
+    };
+
+    if (Model.GetValue<string>("Empresa").ToUpper() == "OCESP")
+    {
+        Empresa = new
+        {
+            Nome = "OCESP",
+            Logo = "/media/images/logo-sistema-ocesp-azul-50.png",
+            CNPJ = "63.057.855/0001-79",
+            NomeCompleto = "Organização das Cooperativas do Estado de São Paulo",
+            Site = "www.ocesp.org.br",
+            Endereco = "Rua Treze de Maio, 1376 - Bela Vista - CEP: 01327-002 - São Paulo/SP",
+            Telefone = "11 3146-6200",
+            Fax = "11 3146-6222"
+        };
+    }
+
+    if (Model.GetValue<string>("Empresa").ToUpper() == "FESCOOP/SP")
+    {
+        Empresa = new {
+            Nome = "FESCOOP/SP",
+            Logo = "/media/images/fescoop.png",
+            CNPJ = "11.699.151/0001-04",
+            NomeCompleto = "Federação dos Sindicatos das Cooperativas do Estado de São Paulo",
+            Site = "",
+            Endereco = "Rua Joaquim Galvão de França, 4",
+            Telefone = "11 3146-6282",
+            Fax = ""
+        };
+    }
+}
+    <div class="container">
+
+        <div class="no-print text-center" style="padding:10px;">
+            <button type="button" class="btn btn-primary" onclick="javascript:print()">IMPRIMIR</button>
+        </div>
+
+        <table class="table table-bordered text-center">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="vertical-align:middle;"> <img src="@Empresa.Logo" /> </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="background:#EEE;">
+                        <table class="table table-bordered margin0">
+                            <tr>
+                                <th class="text-right"><h4>RECIBO</h4></th>
+                                <td class="text-left"><h4>Nº @(Model.Id.ToString("00000000"))</h4></td>
+                                <th class="text-right"><h4>VALOR</h4></th>
+                                <td class="text-left"><h4>@(Model.GetValue<double>("Valor").ToString("c", new System.Globalization.CultureInfo("pt-BR"))) </h4></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="vertical-align:middle;">
+                        @(Model.GetValue<string>("pagador")) pagou a importância de  <strong>@(Model.GetValue<double>("Valor").PorExtensoDeReal())</strong> Correspondente a  <strong>@Motivo</strong>.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+
+                        <table class="table table-bordered margin0">
+                            <tr>
+                                <td style="width:50%;background:#EEE;">
+
+                                    <table class="table table-bordered margin0">
+                                        <tr>
+                                            <th class="text-right">Banco</th>
+                                            <td class="text-left">@(Model.GetValue<string>("bancoNome"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right">Agencia</th>
+                                            <td class="text-left">@(Model.GetValue<string>("bancoAgencia"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right">C. Corrente</th>
+                                            <td class="text-left">@(Model.GetValue<string>("bancoConta"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right">Dia</th>
+                                            <td class="text-left">@(Model.GetValue<DateTime>("pagamento").ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("pt-BR")))</td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                                <td style="vertical-align:middle;">
+                                    @(Model.GetValue<DateTime>("emissao").ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("pt-BR")))<br />@*.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))*@
+                                    ____________________________________________________<br />
+                                    @Empresa.NomeCompleto<br />
+                                    Emissor: @(MembersService.GetById(Model.GetValue<int>("member")).Name)<br />
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-left">
+                        <p>A @Empresa.Nome, instituição sem fins lucrativos, declara que aplica integralmente as contribuições recebidas na realização de seus objetivos sociais e não distribui lucros aos seus associados</p>
+                        <p>(*)OBS: Somente terá validade após a confirmação do Crédito. <br /> O cancelamento do Recibo somente será aceito mediante a apresentação desta via.</p>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <hr style="border: 1px dashed #AAA;" />
+
+        <table class="table table-bordered text-center">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="vertical-align:middle;"> <img src="@Empresa.Logo" /> </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="background:#EEE;">
+                        <table class="table table-bordered margin0">
+                            <tr>
+                                <th class="text-right"><h4>RECIBO</h4></th>
+                                <td class="text-left"><h4>Nº @(Model.Id.ToString("00000000"))</h4></td>
+                                <th class="text-right"><h4>VALOR</h4></th>
+                                <td class="text-left"><h4>@(Model.GetValue<double>("Valor").ToString("c", new System.Globalization.CultureInfo("pt-BR"))) </h4></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="vertical-align:middle;">
+                        @(Model.GetValue<string>("pagador")) pagou a importância de  <strong>@(Model.GetValue<double>("Valor").PorExtensoDeReal())</strong> Correspondente a  <strong>@Motivo</strong>.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+
+                        <table class="table table-bordered margin0">
+                            <tr>
+                                <td style="width:50%;background:#EEE;">
+
+                                    <table class="table table-bordered margin0">
+                                        <tr>
+                                            <th class="text-right">Banco</th>
+                                            <td class="text-left">@(Model.GetValue<string>("bancoNome"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right">Agencia</th>
+                                            <td class="text-left">@(Model.GetValue<string>("bancoAgencia"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right">C. Corrente</th>
+                                            <td class="text-left">@(Model.GetValue<string>("bancoConta"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right">Dia</th>
+                                            <td class="text-left">@(Model.GetValue<DateTime>("pagamento").ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("pt-BR")))</td>@*.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("pt-BR"))*@
+                                        </tr>
+                                    </table>
+
+                                </td>
+                                <td style="vertical-align:middle;">
+                                    @(Model.GetValue<DateTime>("emissao").ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("pt-BR")))<br />@*.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))*@
+                                    ____________________________________________________<br />
+                                    @Empresa.NomeCompleto<br />
+                                    Emissor: @(MembersService.GetById(Model.GetValue<int>("member")).Name)<br />
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-left">
+                        <p>A @Empresa.Nome, instituição sem fins lucrativos, declara que aplica integralmente as contribuições recebidas na realização de seus objetivos sociais e não distribui lucros aos seus associados</p>
+                        <p>(*)OBS: Somente terá validade após a confirmação do Crédito. <br /> O cancelamento do Recibo somente será aceito mediante a apresentação desta via.</p>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>

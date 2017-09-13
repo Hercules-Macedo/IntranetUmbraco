@@ -1,0 +1,82 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+<div class='panel panel-default'>
+    <div class="panel-body">
+        <form action="" class="row" method="get">
+            <div class="form-group-sm col-md-10">
+                <input type="text" name="query" class="form-control" value="@Request["query"]" placeholder="Titulo Noticia ... ">
+            </div>
+            <div class="form-group-sm col-md-2">
+                <button type="submit" class="btn btn-primary btn-sm btn-block">Pesquisar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@{
+
+    var pageSize = 10;
+    var page = 1;
+    int.TryParse(Request.QueryString["page"], out page);
+    var items = Model.Content.Children().Where(x => x.IsDocumentType("NoticiasItem")).OrderByDescending(x => x.GetPropertyValue<DateTime>("dataDeOrdenacao")).ToList();
+    var totalPages = (int)Math.Ceiling((double)items.Count() / (double)pageSize);
+
+    if (page > totalPages)
+    {
+        page = totalPages;
+    }
+    else if (page < 1)
+    {
+        page = 1;
+    }
+
+    var query = Request["query"];
+    if (!String.IsNullOrWhiteSpace(query))
+    {
+        items = Umbraco.TypedSearch(query, true, "").Where(d => d.DocumentTypeAlias == "NoticiasItem").OrderByDescending(x => x.GetPropertyValue<DateTime>("dataDeOrdenacao")).ToList();
+        totalPages = (int)Math.Ceiling((double)items.Count() / (double)pageSize);
+    }
+}
+
+
+<div class="container">
+
+    @if (page == 1)
+    {
+        <div class="row visible-lg-block">
+            @{ Html.RenderPartial("_noticiasUltimas3"); }
+            <hr />
+        </div>
+                }
+
+    @foreach (var item in items.Skip((page - 1) * pageSize).Take(pageSize))
+    {
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @{
+                        var url = "";
+                        //var url = ((item as Umbraco.Web.PublishedContentModels.NoticiasItem).GetCropUrl("ImagemDestaque", "NoticiaPrincipal"));
+                    }
+
+                    @if (!String.IsNullOrWhiteSpace(url))
+                    {
+                        <img class="col-md-2 margin0 thumbnail noticia-lista-img" src='@url' />
+                    }
+                    <div class="col-md-10 noticia-lista-container">
+                        <a class="col-md-12 noticia-lista-link" href="@item.Url"> @((item as NoticiasItem).TituloNoticia)</a>
+                        <p class="col-md-6 noticia-lista-data"> <i class="fa fa-calendar" aria-hidden="true"></i> @(item.GetPropertyValue<DateTime>("dataDeOrdenacao").ToString("D", HTMLHelpers.cultureInfo()).ToFirstUpper()) / <i class="fa fa-user" aria-hidden="true"></i> Por: @item.WriterName </p>
+                        <p class="col-md-12 noticia-lista-breveDescricao">@Umbraco.Truncate(((item as NoticiasItem).BreveDescricao), 300)</p>
+                        @*<a href="@item.Url" class="col-md-2 btn btn-primary btn-sm noticia-lista-mais">Notícia completa</a>*@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row marginT30">
+        @Html.Partial("_pagination", new Pager(CurrentPage.url, Request.QueryString, (int)items.Count(), page, pageSize))
+    </div>
+
+</div>

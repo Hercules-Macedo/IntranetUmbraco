@@ -1,0 +1,98 @@
+﻿@using Intranet.Models;
+@model EquipamentoReservaVM
+
+@{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaEquipamentosSurfaceController>("Reservar", null, new { id = "form-equipamento-reserva" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(m => m.Id, new { value = "", @class = "form-control" })
+    @*
+    @Html.HiddenFor(m => m.ReservaDe, new { value = "", @class = "form-control" })
+    @Html.HiddenFor(m => m.ReservaAte, new { value = "", @class = "form-control" })
+    *@
+    @Html.HiddenFor(m => m.EquipamentoId, new { @class = "form-control" })
+
+    <div class="modal fade" id="modalEquipamentoReserva" tabindex="-1" role="dialog" aria-labelledby="modalEquipamentoReserva-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalEquipamentoReserva-label">{{vw.Descricao}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                       
+                        <div ng-show="vw.Reservas" style="height:160px;overflow:auto;">
+                            <small>Reservas já efetuadas:</small>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>De</th>
+                                    <th>Até</th>
+                                </tr>
+                                <tr ng-repeat="vwItem in vw.Reservas">
+                                    <td>{{vwItem.LoginName}}</td>
+                                    <td>{{vwItem.ReservaDe | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                                    <td>{{vwItem.ReservaAte | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-4 paddingR0">
+                                @Html.LabelFor(m => m.ReservaDe)
+                                @Html.TextBoxFor(m => m.ReservaDe, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ReservaDe)
+                            </div>
+
+                            <div class="form-group col-md-2 paddingL5">
+                                @Html.LabelFor(m => m.ReservaDeHorario)
+                                @Html.TextBoxFor(m => m.ReservaDeHorario, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ReservaDeHorario)
+                            </div>
+
+                            <div class="form-group col-md-4 paddingR0">
+                                @Html.LabelFor(m => m.ReservaAte)
+                                @Html.TextBoxFor(m => m.ReservaAte, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ReservaAte)
+                            </div>
+
+                            <div class="form-group col-md-2 paddingL5">
+                                @Html.LabelFor(m => m.ReservaAteHorario)
+                                @Html.TextBoxFor(m => m.ReservaAteHorario, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ReservaAteHorario)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                @Html.LabelFor(m => m.MotivoReserva)
+                                @Html.TextAreaFor(m => m.MotivoReserva, new { rows = "4", placeholder = "Motivo Reserva", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MotivoReserva)
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Reservar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#form-equipamento-reserva #ReservaDe").mask('99/99/9999', { placeholder: "__/__/____" });
+            $("#form-equipamento-reserva #ReservaAte").mask('99/99/9999', { placeholder: "__/__/____" });
+            $("#form-equipamento-reserva #ReservaDeHorario").mask('00:00', { placeholder: "__ : __" });
+            $("#form-equipamento-reserva #ReservaAteHorario").mask('00:00', { placeholder: "__ : __" });
+        });
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@inherits UmbracoTemplatePage<Umbraco.Web.PublishedContentModels.CaixinhaOverview>
+@{
+    Layout = "Master.cshtml";
+    var itens = CurrentPage.Children("caixinhaItem").Where("Solicitante = " + Members.GetCurrentMemberId()).OrderBy("CreateDate descending");
+}
+<div ng-controller="sescoop.controllers.sistemas.caixinha">
+    <div class="panel panel-default">
+        <div class="panel-body text-right">
+            <button class="btn btn-primary btn-sm" ng-click="novo()">NOVA SOLICITAÇÃO</button>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <table class="table table-bordered">
+            <tr>
+                <th width="80">Id</th>
+                <th>Solicitante</th>
+                <th>Superior</th>
+                <th>Descrição</th>
+                <th width="90"></th>
+            </tr>
+
+            @if (!itens.Any())
+            {
+                <tr>
+                    <td colspan="5">Nenhum iten encontrado.</td>
+                </tr>
+            }
+
+            @foreach (var item in itens)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@(Members.GetById(item.Solicitante).Name)</td>
+                    <td>@(Members.GetById(item.Superior).Name)</td>
+                    <td>@item.Name</td>
+                    <td class="text-center">
+                        <a class="btn btn-primary btn-xs" href="@item.url"><i class="fa fa-print" aria-hidden="true"></i></a>
+                        <a class="btn btn-danger btn-xs" ng-click="excluir(@item.Id)" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+@{ Html.RenderPartial("CaixinhaSurface/_novo", new Intranet.Models.CaixinhaVM()); }

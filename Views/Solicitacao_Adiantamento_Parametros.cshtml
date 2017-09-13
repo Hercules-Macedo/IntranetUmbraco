@@ -1,0 +1,16 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.data.Repositories.Base;
+@using Intranet.Models;
+@using System.Globalization;
+@using System.Threading;
+
+@{
+    Layout = "Solicitacao_Adiantamento_Master.cshtml";
+    ViewBag.activeTab = 2;
+    var parametros = new BaseRepository<AdiantamentoViagemParametros>().Find(1);
+
+    Html.RenderPartial("SolicitacaoAdiantamentoSurface/_parametros", parametros); 
+
+}
+
+

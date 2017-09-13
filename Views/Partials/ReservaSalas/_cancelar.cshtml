@@ -1,0 +1,72 @@
+﻿@using Intranet.Models;
+@model SalaReservaCencelamentoVM
+
+@{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaSalasSurfaceController>("Cancelar", null, new { id = "form-sala-cancelar" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    @Html.HiddenFor(m => m.Id, new { value = "" })
+
+
+    @Html.HiddenFor(m => m.DataCancelamento)
+
+    <div class="modal fade" id="modalSalaCancelar" tabindex="-1" role="dialog" aria-labelledby="modalSalaCancelar-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalSalaCancelar-label"><i class="fa fa-times-circle" aria-hidden="true"></i> Cancelar Reserva de Sala</h4>
+                </div>
+                <div class="modal-body"> 
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Id</th>
+                            <td colspan="3">{{ vw.Id | zeropadding:4 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sala</th>
+                            <td colspan="3">{{ vw.SalaDescricao }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo</th>
+                            <td colspan="3">{{ vw.TipoReserva }}</td>
+                        </tr>
+                        <tr>
+                            <th>Login</th>
+                            <td>{{ vw.Login }}</td>
+                            <th>Email</th>
+                            <td>{{ vw.Email }}</td>
+                        </tr>
+                        <tr>
+                            <th>De</th>
+                            <td>{{ vw.ReservaDe | date:'dd/MM/yyyy' }}</td>
+                            <th>Até</th>
+                            <td>{{ vw.ReservaAte | date:'dd/MM/yyyy' }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.MotivoCancelamento)
+                                @Html.TextAreaFor(m => m.MotivoCancelamento, new { rows = "3", value = "", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MotivoCancelamento)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-danger">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

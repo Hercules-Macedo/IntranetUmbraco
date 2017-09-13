@@ -1,0 +1,128 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.Models;
+@{
+    Layout = "ReservaEquipamentos_Master.cshtml";
+    ViewBag.activeTab = 2;
+
+    ViewBag.title = "Reserva de Equipamentos";
+    ViewBag.subtitle = "Gerênciamento de Reservas de Equipamentos";
+
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body">
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtIdReserva">Id Reserva</label>
+            <input type="text" ng-model="lista.model.ReservaId" class="form-control" id="txtIdReserva" placeholder="Código Reserva">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtEquipamentoId">Id Equipamento</label>
+            <input type="text" ng-model="lista.model.EquipamentoId" class="form-control" id="txtEquipamentoId" placeholder="Código Equipamento">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtEquipamentoDesc">Equipamento</label>
+            <input type="text" ng-model="lista.model.EquipamentoDescricao" class="form-control" id="txtEquipamentoDesc" placeholder="Nome do Equipamento">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtEquipamentoTipo">Tipo</label>
+            <input type="text" ng-model="lista.model.TipoDescricao" class="form-control" id="txtEquipamentoTipo" placeholder="Tipo">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtMemberId">Member ID</label>
+            <input type="text" ng-model="lista.model.MemberId" class="form-control" id="txtMemberId" placeholder="Member Id">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtReservaDe">De</label>
+            <input type="date" ng-model="lista.model.reservaDe" class="form-control" id="txtReservaDe" placeholder="">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtReservaAte">Até</label>
+            <input type="date" ng-model="lista.model.reservaAte" class="form-control" id="txtReservaAte" placeholder="">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtStatusTipo">Status</label>
+            <select ng-model="lista.model.statusEquipamentoReserva" class="form-control">
+                <option value="">Todos</option>
+                <option value="1">CONFIRMADA</option>
+                <option value="2">ANDAMENTO</option>
+                <option value="3">CANCELADA</option>
+                <option value="4">CONCLUIDA</option>
+            </select>
+        </div>
+
+        <div class="form-group-sm col-md-12 text-right marginT10">
+            <div class="btn-group">
+                <button class="btn btn-success btn-sm" ng-click="lista.pag.currentPage=1;lista.Exportar();"> <i class="fa fa-file-excel-o" aria-hidden="true"></i> </button>
+                <button class="btn btn-primary btn-sm" ng-click="lista.pag.currentPage=1;lista.Pesquisar();"> <i class="fa fa-search" aria-hidden="true"></i> Pesquisar </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="panel panel-default" ng-init="lista.Pesquisar();">
+    <div class="panel-heading">Minhas Reservas</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [1,10,20,50,100]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'R.Id', text:'Id'}, {value:'T.descricao', text:'Tipo'}, {value:'R.statusEquipamentoReserva', text:'Status'},{value:'R.reservaDe', text:'De'},{value:'R.reservaAte', text:'Até'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+        </div>
+    </div>
+
+    <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered margin0">
+        <thead>
+            <tr>
+                <th data-column-id="Id" data-type="numeric" width="30" data-identifier="true">ID</th>
+                <th data-column-id="Equipamento">Login</th>
+                <th data-column-id="Equipamento">Equipamento</th>
+                <th data-column-id="Tipo" data-order="desc">Tipo</th>
+                <th class="textCenter" data-column-id="ReservaDe" data-order="desc" data-converter="datetime">De</th>
+                <th class="textCenter" data-column-id="ReservaAte" data-order="desc" data-converter="datetime">Até</th>
+                <th class="textCenter" data-column-id="Status" data-formatter="link" data-sortable="false">Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-hide="lista.data.length">
+                <td class="padding20" colspan="8">Nenhum item encontrado.</td>
+            </tr>
+            <tr ng-repeat="item in lista.data">
+                <td>{{item.ReservaId | zeropadding:4}}</td>
+                <td>{{item.LoginName}}</td>
+                <td>{{item.EquipamentoDescricao}}</td>
+                <td>{{item.TipoDescricao}}</td>
+                <td class="textCenter">{{item.reservaDe | date:'dd/MM/yyyy'}}</td>
+                <td class="textCenter">{{item.reservaAte | date:'dd/MM/yyyy'}}</td>
+                <td class="textCenter">{{item.statusEquipamentoReserva | EnumStatusSalaReserva }}</td>
+                <td class="textCenter">
+                    <button class="btn btn-primary btn-xs" data-toggle="tooltip" title="Iniciar" ng-click="ModalEquipamentoIniciar(item)" ng-show="ShowIniciar(item)"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></button>
+                    <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Cancelar" ng-click="ModalEquipamentoCancelar(item)" ng-show="ShowCancelar(item)"><i class="fa fa-times-circle" aria-hidden="true"></i></button>
+                    <button class="btn btn-warning btn-xs" data-toggle="tooltip" title="Finalizar" ng-click="ModalEquipamentoFinalizar(item)" ng-show="ShowAndamento(item)"><i class="fa fa-sign-in" aria-hidden="true"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <!-- pager -->
+        <pagination changing="lista.Pesquisar();" pagining="lista.pag"></pagination>
+        <!-- pager -->
+    </div>
+</div>

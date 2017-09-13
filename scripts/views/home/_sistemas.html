@@ -1,0 +1,13 @@
+﻿<div ng-repeat="n in [{ico:'fa fa-car', name:'Reserva de Carros', url:'/sistemas/reserva-de-veiculos/', cssClass:'carros'},
+     {ico:'fa fa-key', name:'Reserva de Salas', url:'/sistemas/reserva-de-salas/', cssClass:'salas'},
+     {ico:'fa fa-money', name:'Adiantamentos', url:'/sistemas/solicitacao-adiantamentos/', cssClass:'copa'},
+     {ico:'fa fa-laptop', name:'Reserva Equipamentos', url:'/sistemas/reserva-de-equipamentos/', cssClass:'equipamentos'},
+     {ico:'fa fa-user', name:'Pessoas', url:'/colaboradores/emails-e-ramais/', cssClass:'pessoas'},
+     {ico:'fa fa-file-text', name:'Documentos', url:'/documentos/', cssClass:'documentos'}]" class="col-md-2">
+    <div class="panel panel-default">
+        <div class="panel-body box-sistema {{n.cssClass}}">
+            <i class="{{n.ico}}" aria-hidden="true"></i>
+            <p><a href="{{n.url}}" class="ng-binding">{{n.name}}</a></p>
+        </div>
+    </div>
+</div>

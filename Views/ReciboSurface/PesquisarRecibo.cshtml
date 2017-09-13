@@ -1,0 +1,79 @@
+﻿@model List<Umbraco.Core.Models.IContent>
+@using EscritaPorExtenso.Moeda;
+@{ 
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PesquisarRecibo</title>
+
+    <link href="~/css/united/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/default.classes.css" rel="stylesheet" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="no-print text-center padding10">
+            <button type="button" class="btn btn-primary" onclick="javascript:window.history.back();">VOLTAR</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:print()" >IMPRIMIR</button>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th colspan="4">Filtros de pesquisa</th>
+            </tr>
+            <tr>
+                <th>Pagador</th>
+                <th>Emissão De</th>
+                <th>Emissão Até</th>
+                <th>Empresa</th>
+            </tr>
+            <tr>
+                <td>@(String.IsNullOrWhiteSpace(ViewBag.Pagador)? " - " : ViewBag.Pagador)</td>
+                <td>@(((DateTime?)ViewBag.de) != null ? ((DateTime?)ViewBag.de).Value.ToString("dd/MM/yyyy") : " - ")</td>
+                <td>@(((DateTime?)ViewBag.ate) != null ? ((DateTime?)ViewBag.ate).Value.ToString("dd/MM/yyyy") : " - ")</td>
+                <td>@(String.IsNullOrWhiteSpace(ViewBag.Empresa) ? " - " : ViewBag.Empresa)</td>
+            </tr>
+        </table>
+
+        <hr />
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="200">Nº Recibo</th>
+                    <th>Fonte Pagador</th>
+                    <th>Empresa</th>
+                    <th>Banco</th>
+                    <th width="200">Valor</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="6">Nenhum registro encontrado</td>
+                </tr>
+            }
+
+            @foreach (IContent c in Model)
+            {
+                <tr>
+                    <td> @((c.Id).ToString("0000000")) </td>
+                    <td> @(c.GetValue<string>("Pagador").ToUpper()) </td>
+                    <td> @(c.GetValue<string>("Empresa")) </td>
+                    <td> @(c.GetValue<string>("BancoNome")) </td>
+                    <td> @((c.GetValue<double>("valor")).ToString("c", new System.Globalization.CultureInfo("pt-BR"))) </td>
+                    <td> <a href="@Url.Action("ImprimirRecibo", "ReciboSurface", new { Id=c.Id })">Imprimir</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

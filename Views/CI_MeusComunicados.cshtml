@@ -1,0 +1,181 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "CIMaster.cshtml";
+    ViewBag.ActiveTab = 0;
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+
+            <input type="hidden" ng-model="lista.model.memberId" name="lista.model.memberId" ng-init="lista.model.memberId=@(Members.GetCurrentMemberId());" />
+
+            <div class="form-group col-md-2 margin0">
+                @*<label class="control-label" for="txtProtocolo">Protocolo</label>*@
+                <input type="text" ng-model="lista.model.protocolo" class="form-control" id="txtProtocolo" placeholder="Protocolo">
+            </div>
+
+            <div class="form-group col-md-3 margin0">
+                @*<label class="control-label" for="txtPara">Para</label>*@
+                <input type="text" ng-model="lista.model.para" class="form-control" id="txtPara" placeholder="Para">
+            </div>
+
+            <div class="form-group col-md-3 margin0">
+                @*<label class="control-label" for="txtAssunto">Assunto</label>*@
+                <input type="text" ng-model="lista.model.assunto" class="form-control" id="txtAssunto" placeholder="Assunto">
+            </div>
+
+            <div class="form-group col-md-3 margin0">
+                @*<label class="control-label" for="txtDataCadastro">Data de Cadastro</label>*@
+                <input type="date" ng-model="lista.model.dataCadastro" class="form-control" id="txtDataCadastro" placeholder="Data de Cadastro">
+            </div>
+
+            <div class="form-group-sm col-md-1 margin0">
+                <button class="btn btn-primary btn-block" ng-click="lista.pag.currentPage=1;lista.Pesquisar();">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" ng-init="lista.Pesquisar();">
+    <div class="panel-heading">Minhas comunicações Internas</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2 text-right" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [1,10,20,50,100]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1  text-right" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'C.Id', text:'Id'},{value:'C.protocolo', text:'Protocolo'}, {value:'C.para', text:'Para'}, {value:'C.assunto', text:'Assunto'},{value:'C.dataCadastro', text:'Data de Cadastro'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+        </div>
+    </div>
+    <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered margin0">
+        <thead>
+            <tr>
+                <th width="100" data-column-id="Protocolo">Protocolo</th>
+                <th width="100" data-column-id="De">De</th>
+                <th data-column-id="Para">Para</th>
+                <th data-column-id="Assunto">Assunto</th>
+                <th width="150" data-column-id="Para">Cadastro</th>
+                <th width="100"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-hide="lista.data.length">
+                <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+            </tr>
+            <tr ng-repeat="item in lista.data">
+                <td>{{item.protocolo }}</td>
+                <td>{{item.LoginName}}</td>
+                <td>{{item.para}}</td>
+                <td title="{{item.assunto}}">{{item.assunto | cut:true: 35:' ...'}}</td>
+                <td>{{item.dataCadastro | date:"dd/MM/yyyy": 'UTC'}}</td>
+                <td class="textCenter">
+                    <a href="/Umbraco/Surface/ComunicacaoInternaSurface/Imprimir/{{item.Id}}" target="_blank"  data-toggle="tooltip" title="Imprimir" class="btn btn-warning btn-xs"><i class="fa fa-print" aria-hidden="true"></i></a>
+                    <button ng-click="Excluir(item)" data-toggle="tooltip" title="Excluir" class="btn btn-danger btn-xs"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    <a href="/sistemas/minhas-ci/comunicacao/?Id={{item.Id}}" data-toggle="tooltip" title="Alterar" class="btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <!-- pager -->
+        <pagination changing="lista.Pesquisar();" pagining="lista.pag"></pagination>
+        <!-- pager -->
+    </div>
+
+</div>
+
+<hr/>
+
+<!-- Comunicados por Area -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+
+            <input type="hidden" ng-model="lista.model_por_area.memberId" value="0" />
+
+            <div class="form-group col-md-2 margin0">
+                @*<label class="control-label" for="txtProtocolo">Protocolo</label>*@
+                <input type="text" ng-model="lista.model_por_area.protocolo" class="form-control" id="txtProtocolo" placeholder="Protocolo">
+            </div>
+
+            <div class="form-group col-md-3 margin0">
+                @*<label class="control-label" for="txtPara">Para</label>*@
+                <input type="text" ng-model="lista.model_por_area.para" class="form-control" id="txtPara" placeholder="Para">
+            </div>
+
+            <div class="form-group col-md-3 margin0">
+                @*<label class="control-label" for="txtAssunto">Assunto</label>*@
+                <input type="text" ng-model="lista.model_por_area.assunto" class="form-control" id="txtAssunto" placeholder="Assunto">
+            </div>
+
+            <div class="form-group col-md-3 margin0">
+                @*<label class="control-label" for="txtDataCadastro">Data de Cadastro</label>*@
+                <input type="date" ng-model="lista.model_por_area.dataCadastro" class="form-control" id="txtDataCadastro" placeholder="Data de Cadastro">
+            </div>
+
+            <div class="form-group-sm col-md-1 margin0">
+                <button class="btn btn-primary btn-block" ng-click="lista.pag_por_area.currentPage=1;lista.PesquisarPorArea();">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default" ng-init="lista.PesquisarPorArea();">
+    <div class="panel-heading">Comunicação Interna por Área</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2 text-right" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag_por_area.pageSize" class="form-control" ng-options="obj as obj for obj in [1,10,20,50,100]" ng-change="lista.pag_por_area.currentPage=1;lista.PesquisarPorArea();"></select>
+            </div>
+            <label class="col-md-1  text-right" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag_por_area.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'C.Id', text:'Id'},{value:'C.protocolo', text:'Protocolo'}, {value:'C.para', text:'Para'}, {value:'C.assunto', text:'Assunto'},{value:'C.dataCadastro', text:'Data de Cadastro'}]" ng-change="lista.pag_por_area.currentPage=1;lista.PesquisarPorArea();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag_por_area.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="lista.pag_por_area.currentPage=1;lista.PesquisarPorArea();"></select>
+            </div>
+        </div>
+    </div>
+    <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered margin0">
+        <thead>
+            <tr>
+                <th width="100" data-column-id="Protocolo">Protocolo</th>
+                <th width="100" data-column-id="De">De</th>
+                <th data-column-id="Para">Para</th>
+                <th data-column-id="Assunto">Assunto</th>
+                <th width="150" data-column-id="Para">Cadastro</th>
+                <th width="30"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-hide="lista.data_por_area.length">
+                <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+            </tr>
+            <tr ng-repeat="item in lista.data_por_area">
+                <td>{{item.protocolo }}</td>
+                <td>{{item.LoginName}}</td>
+                <td>{{item.area}} / {{item.departamento==null?'Todos':item.departamento}}</td>
+                <td title="{{item.assunto}}">{{item.assunto | cut:true: 35:' ...'}}</td>
+                <td>{{item.dataCadastro | date:"dd/MM/yyyy": 'UTC'}}</td>
+                <td class="textCenter">
+                    <a href="/Umbraco/Surface/ComunicacaoInternaSurface/Imprimir/{{item.Id}}" target="_blank" data-toggle="tooltip" title="Imprimir" class="btn btn-warning btn-xs"><i class="fa fa-print" aria-hidden="true"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <!-- pager -->
+        <pagination changing="lista.PesquisarPorArea();" pagining="lista.pag_por_area"></pagination>
+        <!-- pager -->
+    </div>
+
+</div>

@@ -1,0 +1,195 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+
+    Layout = "ReservaEquipamentos_Master.cshtml";
+    ViewBag.activeTab = 0;
+
+    var mes = DateTime.Now.Month;
+    var ano = DateTime.Now.Year;
+
+    string qMes = Request.QueryString["mes"];
+    string qAno = Request.QueryString["ano"];
+    if (qMes != null && qAno != null)
+    {
+        mes = Int32.Parse(qMes);
+        ano = Int32.Parse(qAno);
+    }
+
+    ViewBag.title = "Reservas para o Mês de " + HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(mes).ToString().ToFirstUpper();
+
+    var equipamentosRepository = new Intranet.data.Repositories.EquipamentosRepository();
+    var reservaRepository = new Intranet.data.Repositories.EquipamentosReservaRepository();
+    var listaEquipamentosAtivos = equipamentosRepository.ListarEquipamentosPorStatus(Intranet.Models.StatusEquipamento.ATIVA);
+
+    var reservasNoMes = reservaRepository.ListarReservasPorMes(ano, mes);
+    //var minhasReservas = listaReservas.Where(r => r.MemberId == Members.GetCurrentMemberId()).AsEnumerable();
+    }
+
+    @{ Html.RenderPartial("ReservaEquipamentos/_filtro_por_data", new String[] { "ano", "mes" }); }
+
+
+    @foreach (var item in listaEquipamentosAtivos)
+    {
+    <div class="panel panel-default">
+        <div class="panel-heading">@item.Descricao / @item.NumeroSerie</div>
+        <div class="panel-body padding5">
+
+            <ul class="list-group margin0">
+                <li class="list-group-item div-dias">
+                    @for (int i = 1; i <= DateTime.DaysInMonth(ano, mes); i++)
+                    {
+                        DateTime data = new DateTime(ano, mes, i);
+                        var temReserva = reservasNoMes.Where(r => (data >= r.ReservaDe.Date && data <= r.ReservaAte.Date) && r.EquipamentoId == item.Id && ((int)r.StatusEquipamentoReserva == 1 || (int)r.StatusEquipamentoReserva == 2)).ToList();
+
+                        var tooltipString = String.Format("{0}, {1} de {2} de {3}", data.ToString("dddd", HTMLHelpers.cultureInfo()).ToFirstUpper(), i, HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(mes).ToString().ToFirstUpper(), ano);
+                        if (data < DateTime.Today.Date)
+                        {
+                            <div class="item disable text-center" data-toggle="tooltip" data-placement="top" title="@tooltipString - Não é possivel reservar data retroativa."> @i.ToString("00")<br /><i class="fa fa-desktop" aria-hidden="true"></i></div>
+                        }
+                        else if (temReserva.Any())
+                        {
+                            <div class="item reservado text-center" data-toggle="tooltip" ng-click='ModalEquipamentoReservar(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(new { Id=item.Id, Descricao=item.Descricao, Data=data, Reservas=temReserva.ToList()})) )' data-placement="top" title="@tooltipString"> @i.ToString("00")<br /><i class="fa fa-desktop" aria-hidden="true"></i> </div>
+                        }
+                        else
+                        {
+                            <div class="item disponivel text-center" data-toggle="tooltip" ng-click='ModalEquipamentoReservar(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(new { Id=item.Id, Descricao=item.Descricao, Data=data})) )' data-placement="top" title="@tooltipString"> @i.ToString("00")<br /><i class="fa fa-desktop" aria-hidden="true"></i> </div>
+                        }
+
+                    }
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    }
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body">
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtIdReserva">Id Reserva</label>
+            <input type="text" ng-model="lista.model.ReservaId" class="form-control" id="txtIdReserva" placeholder="Código Reserva">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtEquipamentoId">Id Equipamento</label>
+            <input type="text" ng-model="lista.model.EquipamentoId" class="form-control" id="txtEquipamentoId" placeholder="Código Equipamento">
+        </div>
+
+        <div class="form-group col-md-6">
+            <label class="control-label" for="txtEquipamentoDesc">Equipamento</label>
+            <input type="text" ng-model="lista.model.EquipamentoDescricao" class="form-control" id="txtEquipamentoDesc" placeholder="Nome do Equipamento">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtEquipamentoTipo">Tipo</label>
+            <input type="text" ng-model="lista.model.TipoDescricao" class="form-control" id="txtEquipamentoTipo" placeholder="Tipo">
+        </div>
+
+        <input type="hidden" ng-model="lista.model.MemberId" name="lista.model.memberId" ng-init="lista.model.MemberId=@(Members.GetCurrentMemberId());" />
+
+        <!--
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtMemberId">Member ID</label>
+            <input type="text" ng-model="lista.model.MemberId" class="form-control" id="txtMemberId" placeholder="Member Id">
+        </div>
+        -->
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtReservaDe">De</label>
+            <input type="date" ng-model="lista.model.reservaDe" class="form-control" id="txtReservaDe" placeholder="">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtReservaAte">Até</label>
+            <input type="date" ng-model="lista.model.reservaAte" class="form-control" id="txtReservaAte" placeholder="">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label class="control-label" for="txtStatusTipo">Status</label>
+            <select ng-model="lista.model.statusEquipamentoReserva" class="form-control">
+                <option value="">Todos</option>
+                <option value="1">CONFIRMADA</option>
+                <option value="2">ANDAMENTO</option>
+                <option value="3">CANCELADA</option>
+                <option value="4">CONCLUIDA</option>
+            </select>
+        </div>
+        
+        <div class="form-group col-md-offset-9 col-md-3">
+            <button class="btn btn-primary btn-block" ng-click="lista.pag.currentPage=1;lista.Pesquisar();">PESQUISAR</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="panel panel-default" ng-init="lista.Pesquisar();">
+    <div class="panel-heading">Minhas Reservas</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [1,10,20,50,100]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'R.Id', text:'Id'}, {value:'T.descricao', text:'Tipo'}, {value:'R.statusEquipamentoReserva', text:'Status'},{value:'R.reservaDe', text:'De'},{value:'R.reservaAte', text:'Até'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="lista.pag.currentPage=1;lista.Pesquisar();"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered margin0">
+                    <thead>
+                        <tr>
+                            <th data-column-id="Id" data-type="numeric" width="30" data-identifier="true">ID</th>
+                            <th data-column-id="Equipamento">Equipamento</th>
+                            <th data-column-id="Tipo" data-order="desc">Tipo</th>
+                            <th class="textCenter" data-column-id="ReservaDe" data-order="desc" data-converter="datetime">De</th>
+                            <th class="textCenter" data-column-id="ReservaAte" data-order="desc" data-converter="datetime">Até</th>
+                            <th class="textCenter" data-column-id="Status" data-formatter="link" data-sortable="false">Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-hide="lista.data.length">
+                            <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+                        </tr>
+                        <tr ng-repeat="item in lista.data">
+                            <td>{{item.ReservaId | zeropadding:4}}</td>
+                            <td>{{item.EquipamentoDescricao}}</td>
+                            <td>{{item.TipoDescricao}}</td>
+                            <td class="textCenter">{{item.reservaDe | date:'dd/MM/yyyy': 'UTC'}}</td>
+                            <td class="textCenter">{{item.reservaAte | date:'dd/MM/yyyy': 'UTC'}}</td>
+                            <td class="textCenter">{{item.statusEquipamentoReserva | EnumStatusSalaReserva }}</td>
+                            <td class="textCenter">
+                                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Cancelar" ng-click="ModalEquipamentoCancelar(item)" ng-show="ShowCancelar(item)"><i class="fa fa-times-circle" aria-hidden="true"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="panel panel-default" style="border-top:0px;">
+                    <div class="panel-body">
+                        Páginas: {{ lista.pag.currentPage }} de {{ lista.pag.pages }}
+                    </div>
+                </div>
+
+
+                <!-- pager -->
+                <pagination changing="lista.Pesquisar();" pagining="lista.pag"></pagination>
+                <!-- pager -->
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.data.Repositories.Base
+@using Intranet.Models
+@{
+    Layout = "CIMaster.cshtml";
+    ViewBag.ActiveTab = 1;
+
+    var obj = new Intranet.Models.ComunicacaoInternaVM();
+    BaseRepository<ComunicacaoInterna> repo = new BaseRepository<ComunicacaoInterna>();
+
+    var qId = Request.QueryString["Id"];
+    if (qId != null)
+    {
+        var co = repo.dbContext.Database.FirstOrDefault<ComunicacaoInterna>(new Umbraco.Core.Persistence.Sql("SELECT * FROM sisComunicacaoInterna WHERE Id = @0", qId));
+        if (co != null)
+        {
+            obj.Id = co.Id;
+            obj.Area = co.Area;
+            obj.Departamento = co.Departamento;
+            obj.Empresa = co.Empresa;
+            obj.Para = co.Para;
+            obj.Assunto = co.Assunto;
+            obj.Descricao = co.Descricao;
+        }
+    }
+
+}
+
+@{ Html.RenderPartial("ComunicacaoInternaSurface/_comunicado", obj); }

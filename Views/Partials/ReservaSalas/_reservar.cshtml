@@ -1,0 +1,149 @@
+﻿@using Intranet.Models;
+@using Intranet.data.Repositories.Base;
+@model SalaReservaVM
+
+@{
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+
+    List<SelectListItem> alimentacao = new List<SelectListItem>();
+    alimentacao.Add(new SelectListItem() { Text = "Bolacha", Value = "Bolacha" });
+
+    List<SelectListItem> bebidas = new List<SelectListItem>();
+    bebidas.Add(new SelectListItem() { Text = "Água", Value = "Agua" });
+    bebidas.Add(new SelectListItem() { Text = "Café", Value = "Cafe" });
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaSalasSurfaceController>("Reservar", null, new { id = "form-sala-reserva" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(m => m.Id, new { value = "", @class = "form-control" })
+    @Html.HiddenFor(m => m.MemberId, new { value = "", @class = "form-control" })
+    @Html.HiddenFor(m => m.SalaId, new { value = "", @class = "form-control" })
+
+    <div class="modal fade" id="modalSalaReserva" tabindex="-1" role="dialog" aria-labelledby="modalSalaReserva-label">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalSalaReserva-label">Reservar Sala</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+
+                            <div ng-show="vw.Reservas" style="height:160px;overflow:auto;">
+                                <small>Reservas já efetuadas:</small>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>De</th>
+                                        <th>Até</th>
+                                    </tr>
+                                    <tr ng-repeat="vwItem in vw.Reservas">
+                                        <td>{{vwItem.Login}}</td>
+                                        <td>{{vwItem.ReservaDe | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                                        <td>{{vwItem.ReservaAte | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="form-group col-md-2 paddingR0">
+                                @Html.LabelFor(m => m.ReservaDe)
+                                @Html.TextBoxFor(m => m.ReservaDe, new { value = "", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ReservaDe, "Infome uma data válida.")
+                            </div>
+
+                            <div class="form-group col-md-2 paddingL5">
+                                @Html.LabelFor(m => m.ReservaDeHorario)
+                                @Html.TextBoxFor(m => m.ReservaDeHorario, new { @class = "form-control", data_mask = "99:99" })
+                                @Html.ValidationMessageFor(model => model.ReservaDeHorario)
+                            </div>
+
+                            <div class="form-group col-md-2 paddingR0">
+                                @Html.LabelFor(m => m.ReservaAte)
+                                @Html.TextBoxFor(m => m.ReservaAte, new { value = "", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ReservaAte, "Infome uma data válida.")
+                            </div>
+
+                            <div class="form-group col-md-2 paddingL5">
+                                @Html.LabelFor(m => m.ReservaAteHorario)
+                                @Html.TextBoxFor(m => m.ReservaAteHorario, new { @class = "form-control", data_mask = "99:99" })
+                                @Html.ValidationMessageFor(model => model.ReservaAteHorario)
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                @Html.LabelFor(m => m.TipoReserva)
+                                @{ List<string> TipoReserva = new List<string>() { "Reunião", "Evento", "Outro" }; }
+                                @Html.DropDownListFor(m => m.TipoReserva, new SelectList(TipoReserva), "Selecione o tipo", new { value = "", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.TipoReserva)
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                @Html.LabelFor(m => m.ServicoCopa)
+                                @{ List<string> ServicoCopa = new List<string>() { "Sim", "Não" }; }
+                                @Html.DropDownListFor(m => m.ServicoCopa, new SelectList(ServicoCopa), "SELECIONE", new { value = "", @class = "form-control", @ng_model= "ServicoCopa" })
+                                @Html.ValidationMessageFor(model => model.ServicoCopa)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6" ng-show="ServicoCopa=='Sim'">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Alimentação</div>
+                                    <div class="panel-body">
+                                        @foreach (var item in alimentacao)
+                                        {
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" @(Model.Alimentacao.Contains(item.Value) ? "checked" : "") name="Alimentacao[]" value="@item.Value"> @item.Text
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-show="ServicoCopa=='Sim'">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Bebidas</div>
+                                    <div class="panel-body">
+                                        @foreach (var item in bebidas)
+                                        {
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" @(Model.Bebidas.Contains(item.Value) ? "checked" : "") name="Bebidas[]" value="@item.Value"> @item.Text
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            
+                            <div class="form-group col-md-12">
+                                @Html.LabelFor(m => m.MotivoReserva)
+                                @Html.TextAreaFor(m => m.MotivoReserva, new { rows = "3", value = "", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MotivoReserva)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Reservar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#ReservaDe").mask('99/99/9999', { placeholder: "__/__/____" });
+            $("#ReservaAte").mask('99/99/9999', { placeholder: "__/__/____" });
+            $("#ReservaDeHorario").mask('00:00', { placeholder: "__ : __" });
+            $("#ReservaAteHorario").mask('00:00', { placeholder: "__ : __" });
+        });
+    </script>
+                                    }

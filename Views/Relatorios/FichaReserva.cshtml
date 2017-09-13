@@ -1,0 +1,196 @@
+﻿@model Intranet.Models.VeiculoFichaReserva
+@{
+    Layout = "~/Views/Shared/Relatorios/_relatorio_header.cshtml";
+    ViewBag.Title = "Ficha de Reserva de Veículo";
+    System.Globalization.CultureInfo culture = new System.Globalization.CultureInfo("pt-BR");
+    ViewBag.Empresa = "SESCOOP/SP";
+}
+
+<div class="container">
+    <table class="table table-bordered" style="margin-top:5px;">
+        <tbody>
+            <tr>
+                <th colspan="3"  class="escura"><h4>RESERVA DE VEÍCULO - FICHA DE RESERVA</h4></th>
+                <td class="text-center"><h4> Nº: @Model.Numero </h4> </td>
+            </tr>
+            <tr>
+                <th>Departamento:</th>
+                <td>@Model.Departamento </td>
+                <th>Centro de Custo:</th>
+                <td>@Model.CentroCusto </td>
+            </tr>
+            <tr>
+            <tr>
+                <th>Motorista:</th>
+                <td> @Model.Motorista </td>
+                <th>Veículo / Placa:</th>
+                <td colspan="2">@Model.Veiculo / @Model.VeiculoPlaca </td>
+            </tr>
+            <tr>
+                <th colspan="4"  class="escura">Itinerário</th>
+            </tr>
+            <tr>
+                <th>Saída:</th>
+                <td>@Model.LocalSaida</td>
+                <th>Data e Hora:</th>
+                <td>@Model.DataSaida </td>
+            </tr>
+            <tr>
+                <th>Destino:</th>
+                <td colspan="3">@Model.LocalDestino</td>
+            </tr>
+            <tr>
+                <th>Retorno:</th>
+                <td>@Model.LocalRetorno</td>
+                <th>Data e Hora:</th>
+                <td>@Model.DataRetorno</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <table class="table table-bordered text-center">
+        <tbody>
+
+            <tr>
+                <th colspan="2" class="escura"> <h4> DADOS PARA O LIVRO DE REGISTRO DO VEÍCULO </h4> </th>
+            </tr>
+
+            <tr>
+                <td width="50%" style="vertical-align: middle;">AUTORIZAÇÃO</td>
+                <td>O VEÍCULO ESTÁ EM CONDIÇÕES DE SER UTILIZADO NO SERVIÇO E ITINERÁRIO RELACIONADOS ACIMA</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <hr style="border: 1px solid #AAA;" />
+                    <p>GERÊNCIA</p>
+                </td>
+                <td>
+                    <hr style="border: 1px solid #AAA;" />
+                    <p>RESPONSÁVEL PELA MANUTENÇÃO</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2" style="background:#CCC;">
+
+                    <table class="table table-bordered text-center font70pct">
+                        <tbody>
+                            <tr>
+                                <td width="20%"></td>
+                                <th width="20%">HORA</th>
+                                <th width="20%">ODOMETRO</th>
+                                <th width="20%">ABASTECIMENTO</th>
+                                <th width="20%">DATA</th>
+                            </tr>
+                            <tr>
+                                <th>SAíDA</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>REGRESSO</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>DIFERENÇA</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <p>APÓS O TRABALHO, ESTA FICHA DEVE SER ENTREGUE PREENCHIDA AO GARAGISTA IRREGULARIDADES OU ACIDENTES:</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <hr style="border: 1px solid #AAA;" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <hr style="border: 1px solid #AAA; width:200px;" />
+                    MOTORISTA
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr style="border: 1px dashed #999;"/>
+
+    <table class="table table-bordered" style="margin-bottom:5px;">
+        <tbody>
+
+            <tr>
+                <th colspan="3" class="escura"><h4>RESERVA DE VEÍCULO - FICHA DE RESERVA</h4></th>
+                <td class="text-center"><h4>N: @Model.Numero </h4></td>
+            </tr>
+            <tr>
+                <th>Departamento:</th>
+                <td>@Model.Departamento </td>
+                <th>Centro de Custo:</th>
+                <td>@Model.CentroCusto </td>
+            </tr>
+            <tr>
+                <th>Motorista:</th>
+                <td> @Model.Motorista </td>
+                <th>Veículo / Placa:</th>
+                <td colspan="2">@Model.Veiculo / @Model.VeiculoPlaca </td>
+            </tr>
+            <tr>
+                <th colspan="4" class="escura">Itinerário</th>
+            </tr>
+            <tr>
+                <th>Saída:</th>
+                <td>@Model.LocalSaida</td>
+                <th>Data e Hora:</th>
+                <td>@Model.DataSaida.ToString("dd/MM/yyyy 'às' HH:mm", culture) </td>
+            </tr>
+            <tr>
+                <th>Destino:</th>
+                <td colspan="3">@Model.LocalDestino</td>
+            </tr>
+            <tr>
+                <th>Retorno:</th>
+                <td>@Model.LocalRetorno</td>
+                <th>Data e Hora:</th>
+                <td>@Model.DataRetorno.ToString("dd/MM/yyyy 'às' HH:mm", culture) </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr style="border: 1px dashed #999;"/>
+
+    <table class="table table-bordered text-center font70pct">
+        <tbody> 
+            <tr>
+                <th class="text-center"> TOMEI CONHECIMENTO DAS IRREGULARIDADES ENCONTRADAS E PROVIDENCIEI A RESPEITO DAS MESMAS </th>
+            </tr>
+            <tr>
+                <td>
+                    São Paulo, _________ de __________________________________ de ________
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <hr style="border: 1px solid #AAA; width:200px;" />
+                    Encarregado da Manutenção
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+

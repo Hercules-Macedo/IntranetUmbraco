@@ -1,0 +1,113 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.RecibosOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+    var meusRecibos = Model.Content.Children.ToList();
+    var memberId = (int)Members.GetCurrentMemberId();
+
+    var recibo = new Intranet.Models.ReciboVM();
+    var qId = Request.QueryString["Id"] ?? "0";
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Procurar por Recibo</div>
+            <div class="panel-body">
+
+                @using (Html.BeginUmbracoForm("PesquisarRecibo", "ReciboSurface"))
+                {
+
+                    <div class="form-group col-md-3">
+                        <input type="text" id="Pagador" name="Pagador" class="form-control" placeholder="Nome do Pagador" />
+                    </div>
+
+                    <div class="form-group col-md-3">
+
+                        <date-time-picker id="ReservaDe"
+                                          class='input-group date'
+                                          picker-format="DD/MM/YYYY"
+                                          ng-model="PesquisaDe"
+                                          ng-model-raw="PesquisaDeRaw" ng-required="true">
+
+                            <input name="de" type="text" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </date-time-picker>
+
+
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <date-time-picker id="ReservaAte"
+                                          class='input-group date'
+                                          picker-format="DD/MM/YYYY"
+                                          ng-model="PesquisaAte"
+                                          ng-model-raw="PesquisaAteRaw" ng-required="true">
+
+                            <input name="ate" type="text" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </date-time-picker>
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <select id="empresa" name="empresa" class="form-control">
+                            <option value="">SELECIONE</option>
+                            <option value="SESCOOP/SP">SESCOOP/SP</option>
+                            <option value="OCESP">OCESP</option>
+                            <option value="FESCOOP/SP">FESCOOP/SP</option>
+                        </select>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary"> Pesquisar </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        @Html.Action("CriarEditar", "ReciboSurface", new { Id = qId })
+    </div>
+
+
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Meus Recibos</div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Id</th>
+                    <th>Empresa</th>
+                    <th>Pagador</th>
+                    <th>Valor</th>
+                    <th>Motivo</th>
+                    <th colspan="3"></th>
+                </tr>
+                @foreach (var item in meusRecibos.Where(i => i.GetPropertyValue<int>("member") == memberId).OrderByDescending(c => c.Id))
+                {
+                    var pValor = item.Properties.Where(p => p.PropertyTypeAlias == "valor").FirstOrDefault();
+                    <tr>
+                        <td> @item.Id </td>
+                        <td> @(item.GetPropertyValue<string>("Empresa")) </td>
+                        <td> @(item.GetPropertyValue<string>("Pagador")) </td>
+                        <td> R$ @((string)pValor.DataValue) </td>
+                        <td> @(item.GetPropertyValue<string>("Motivo")) </td>
+                        <td width="30">
+                            <a data-toggle="tooltip" data-placement="top" title="Alterar" class="btn btn-primary btn-xs" href="/sistemas/recibos/?Id=@item.Id"> <i class="fa fa-edit" aria-hidden="true"></i> </a>
+                        </td>
+                        <td width="30">
+                            <a data-toggle="tooltip" data-placement="top" title="Excluir" class="btn btn-danger btn-xs" href="/umbraco/Surface/ReciboSurface/Excluir?Id=@item.Id&page=@CurrentPage.Id"> <i class="fa fa-trash" aria-hidden="true"></i> </a>
+                        </td>
+                        <td width="30">
+                            <a data-toggle="tooltip" data-placement="top" title="Imprimir" class="btn btn-warning btn-xs" target="_blank" href="/umbraco/Surface/ReciboSurface/ImprimirRecibo/@item.Id"> <i class="fa fa-print" aria-hidden="true"></i> </a>
+                        </td>
+                    </tr>
+                            }
+            </table>
+        </div>
+    </div>
+</div>

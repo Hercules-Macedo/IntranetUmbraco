@@ -1,0 +1,103 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.QuizOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@using Archetype.Models;
+@using Archetype.Extensions;
+@using Intranet.Models;
+@using Intranet.data.Repositories.Base;
+
+@{
+    Layout = "Master.cshtml";
+    var selection = Umbraco.Content(CurrentPage.Id).Children().Where("Visible");
+}
+
+@foreach (var item in selection)
+{
+    //using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.QuizSurfaceController>("Votar", null, new { id = "form-quiz-votar" }))
+    using (Html.BeginUmbracoForm("Votar", "QuizSurface", FormMethod.Post))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        @Html.Hidden("Id", 0)
+        @Html.Hidden("IdQuiz", ((int)item.Id).ToString())
+        @Html.Hidden("MemberId", Members.GetCurrentMemberId())
+
+        {
+            var r = new BaseRepository<Intranet.Models.QuizVotos>().dbContext.Database.Fetch<Intranet.Models.QuizVotos>(
+                new Umbraco.Core.Persistence.Sql("SELECT * FROM sisQuizVotos Where MemberId = @0 And IdQuiz = @1",
+                Members.GetCurrentMemberId(),
+                item.Id
+                ));
+
+            var total = new BaseRepository<Intranet.Models.QuizVotosTotalVM>().dbContext.Database.Fetch<Intranet.Models.QuizVotosTotalVM>(
+                new Umbraco.Core.Persistence.Sql("SELECT IdQuiz, Voto, count(*) as Total FROM sisQuizVotos WHERE IdQuiz = @0 group by IdQuiz, voto",
+                item.Id
+                ));
+
+            var totalVotos = (int)total.Sum(f => f.Total);
+
+            if (r.Any())
+            {
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"> @item.Name </div>
+                            <div class="panel-body"> <strong>@item.introducao</strong> </div>
+                            <div class="list-group">
+
+                                @foreach (var fieldset in item.GetPropertyValue<ArchetypeModel>("quiz"))
+                            {
+
+                                var totalItem = (int)total.Where(f => f.Voto == fieldset.GetValue("titulo")).Select(f => f.Total).FirstOrDefault();
+                                var pct = 0.0;
+                                if (totalItem > 0)
+                                {
+                                    pct = Math.Round((totalItem * 100.0) / totalVotos);
+                                }
+
+                                <div class="list-group-item">
+                                    @fieldset.GetValue("titulo") / @(pct)% (@totalItem)
+                                    <div class="progress margin0">
+                                        <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="@(pct)" aria-valuemin="0" aria-valuemax="100" style="width: @(pct)%">
+                                            <span class="sr-only">@(pct)% dos Votos</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-6">
+                    <div class="row marginR10">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"> @item.Name </div>
+                            <div class="panel-body padding20">
+
+                                <div class="marginB10">
+                                    <strong>@item.introducao</strong>
+                                </div>
+
+                                <div class="list-group">
+                                    @foreach (var fieldset in item.GetPropertyValue<ArchetypeModel>("quiz"))
+                            {
+                                        <label class="list-group-item">
+                                            <input type="radio" name="Voto" value="@fieldset.GetValue("titulo")" /> @fieldset.GetValue("titulo")
+                                        </label>
+                                    }
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Votar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+        }
+    }
+}

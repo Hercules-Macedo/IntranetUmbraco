@@ -1,0 +1,185 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.NoticiasItem>
+
+@using Archetype.Models;
+@using Newtonsoft.Json;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@using System.Globalization;
+
+@{
+    Layout = "Master.cshtml";
+
+    ViewBag.Title = CurrentPage.tituloNoticia;
+    ViewBag.SubTitle = CurrentPage.categoria;
+
+    dynamic d = new { };
+    var autor = (Umbraco.Web.PublishedContentModels.Member)Members.GetByUsername(CurrentPage.WriterName);
+    if (autor != null)
+    {
+        string v = autor.GetPropertyValue<string>("divisao");
+        d = v != null ? JsonConvert.DeserializeObject(v) : new { Area = new { Name = "" }, Nucleo = new { Name = "" } };
+    }
+
+    var data = CurrentPage.DataDeOrdenacao.ToString("D", new CultureInfo("pt-BR")) + "";
+    data = ((string)data).ToFirstUpper();
+
+    Dictionary<string[], IPublishedContent> galeria = new Dictionary<string[], IPublishedContent>();
+    foreach (var fieldset in Model.Content.GetPropertyValue<ArchetypeModel>("galeria"))
+    {
+        var img = Umbraco.TypedMedia(Int32.Parse("0" + fieldset.GetValue("imagem")));
+        var titulo = fieldset.GetValue("titulo") + "";
+        var texto = fieldset.GetValue("texto") + "";
+
+        if (img != null)
+        {
+            galeria.Add(new string[] { titulo, texto }, img);
+        }
+    }
+}
+
+<style>
+    div.noticia {
+        font-family: 'Roboto', sans-serif !important;
+    }
+    /*div.page-header{ display:none;}*/
+    div.noticias-breveDescricao {
+        font-style: italic;
+        font-size: 90%;
+    }
+
+    div.noticias-data {
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #AAA;
+    }
+
+    div.noticias-autor {
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #AAA;
+    }
+
+    div.noticias-texto {
+        margin-top: 20px;
+        border-top: 1px solid #EEE;
+        padding-top: 30px !important;
+    }
+
+        div.noticias-texto p {
+            font-size: 16px !important;
+            margin-bottom: 20px !important;
+        }
+
+        div.noticias-texto h3 {
+            margin-top: 20px !important;
+            margin-bottom: 20px !important;
+        }
+
+    #myCarousel {
+        border: 1px solid #AAA;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container padding0 noticia">
+
+    <div class="col-md-12">
+
+    </div>
+
+    <div class="col-md-8">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading"> <i class="fa fa-calendar-check-o marginR10" aria-hidden="true"></i>  @(data) </div>
+
+                <!--
+                <div class="container-fluid marginT20">
+                    @CurrentPage.breveDescricao
+                </div>
+                -->
+                <div class="marginB10">
+                    @if (galeria.Any())
+                    {
+                    <!-- Carousel -->
+                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators">
+                                @foreach (var x in galeria.Select((value, index) => new { value, index }))
+                                {
+                                    <li data-target="#myCarousel" class="@(x.index == 0 ? "active" : "" )" data-slide-to="@x.index"></li>
+                                }
+                            </ol>
+
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" role="listbox">
+                                @foreach (var x in galeria.Select((value, index) => new { value, index }))
+                                {
+                                    <div class="item @(x.index == 0 ? "active" : "" )">
+                                        <img src="@x.value.Value.Url" alt="@x.value.Key" />
+                                        <div class="carousel-caption">
+                                            <h4>@x.value.Key[0]</h4>
+                                            <p>@x.value.Key[1]</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Left and right controls -->
+                            <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                                <i class="sr-only">Previous</i>
+                            </a>
+                            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                <i class="sr-only">Next</i>
+                            </a>
+                        </div>
+                    <!-- Carousel -->
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrWhiteSpace(("" + CurrentPage.imagemDestaque)))
+                        {
+                            <img src="@CurrentPage.imagemDestaque" class="marginB10 boxshadow" width="100%" />
+                        }
+                    }
+                </div>
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        @CurrentPage.texto
+                    </div>
+                </div>
+            </div> <!--panel-default -->
+        </div><!--row-->
+        @if (autor != null)
+        {
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="col-md-2">
+                            <img width="100%" src="@(autor.GetCropUrl("pic", "ProfileBig"))" class="img-circle" style="border:1px solid #AAA;" />
+                        </div>
+                        <div class="col-md-10 marginT10">
+                            <p><strong>Autor: </strong>@autor.Name - @autor.Cargo</p>
+                            <p><strong>Departamento: </strong> @d.Area.Name / @d.Nucleo.Name </p>
+                            <p><strong>Publicado em: </strong> <i class="fa fa-calendar-check-o marginL10" aria-hidden="true"></i> @CurrentPage.UpdateDate.ToString("dd 'de' MMMM 'de' yyyy 'às' HH:mm") </p>
+                        </div>
+                    </div>
+                </div>
+            </div><!--row-->
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div ng-include="'/scripts/views/noticias/_noticiasUltimasLista.html'"></div>
+            </div>
+
+            <div class="col-md-12">
+                <div ng-include="'/scripts/views/weather/_weather.html'"></div>
+            </div>
+        </div>
+    </div>
+
+</div>

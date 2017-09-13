@@ -1,0 +1,125 @@
+﻿@model Intranet.Models.ReciboVM
+
+@{
+    Layout = null;
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.ReciboSurfaceController>("Salvar", null, new { id = "form-recibo" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Meus Recibos</div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.descricao)
+                    @Html.TextBoxFor(m => m.descricao, new { @class = "form-control", placeholder = "Descrição" })
+                    @Html.ValidationMessageFor(m => m.descricao)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.empresa)
+                    @Html.DropDownListFor(m => m.empresa, new SelectList(new List<string>() { "SESCOOP/SP", "OCESP", "FESCOOP" }, Model.empresa), "SELECIONE", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.empresa)
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.pagador)
+                    @Html.TextBoxFor(m => m.pagador, new { @class = "form-control", placeholder = "Pagador..." })
+                    @Html.ValidationMessageFor(m => m.pagador)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.valor)
+                    @Html.TextBoxFor(m => m.valor, new { @class = "form-control money", placeholder = "Valor" })
+                    @Html.ValidationMessageFor(m => m.valor)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.pagamento)
+                    @Html.TextBox("pagamento", ((Model.pagamento != null && Model.pagamento != DateTime.MinValue) ? Model.pagamento.ToString("yyyy-MM-dd") : ""), new { type = "date", @class = "form-control date", placeholder = "Pagamento..." })
+                    @Html.ValidationMessageFor(m => m.pagamento)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.emissao)
+                    @Html.TextBox("emissao", ((Model.emissao != null && Model.emissao != DateTime.MinValue) ? Model.emissao.ToString("yyyy-MM-dd") : ""), new { type = "date", @class = "form-control date", placeholder = "Pagamento..." })
+                    @Html.ValidationMessageFor(m => m.emissao)
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.motivo)
+                    @Html.DropDownListFor(m => m.motivo, new SelectList(new List<string>() {
+                        "Contribuição para manutenção das publicações da Ocesp",
+                        "Contribuição para análise dos atos constitutivos",
+                        "Contribuição para manutenção do credenciamento de auditores",
+                        "Contribuição para realização do Forum de Ascpectos Legais",
+                        "Taxa de Registro",
+                        "Contribuição para prognóstico de registro",
+                        "Contribuição para realização do Encontro Anual do Cooperativismo Paulista",
+                        "Outro",
+                    }, Model.motivo), "SELECIONE", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.motivo)
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.outroMotivo)
+                    @Html.TextAreaFor(m => m.outroMotivo, new { @class = "form-control", placeholder = "Valor" })
+                    @Html.ValidationMessageFor(m => m.outroMotivo)
+                </div>
+            </div>
+
+            @* List<Umbraco.Core.Models.IContent> *@
+
+            <div class="row">
+                <div class="form-group col-md-2">
+                    @Html.Label("Lista de Bancos")
+                    <select>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(m => m.codigoBanco)
+                    @Html.TextBoxFor(m => m.codigoBanco, new { @class = "form-control", placeholder = "Código Banco" })
+                    @Html.ValidationMessageFor(m => m.codigoBanco)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.banco)
+                    @Html.TextBoxFor(m => m.banco, new { @class = "form-control", placeholder = "Nome do Banco" })
+                    @Html.ValidationMessageFor(m => m.banco)
+                </div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(m => m.agencia)
+                    @Html.TextBoxFor(m => m.agencia, new { @class = "form-control", placeholder = "Agência" })
+                    @Html.ValidationMessageFor(m => m.agencia)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.conta)
+                    @Html.TextBoxFor(m => m.conta, new { @class = "form-control", placeholder = "Conta Corrente" })
+                    @Html.ValidationMessageFor(m => m.conta)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button style="width:100px;" class="btn btn-danger btn-sm">Cancelar</button>
+                    <button style="width:100px;" class="btn btn-primary btn-sm">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $.ajax()
+    });
+</script>

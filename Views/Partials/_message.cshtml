@@ -1,0 +1,15 @@
+﻿@using Umbraco.Core.Events;
+@{ string msg = TempData["msg"] == null ? "" : TempData["msg"].ToString(); }
+@if (!String.IsNullOrWhiteSpace(msg))
+{
+    if (TempData["msg-type"] != null)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="alert alert-@TempData["msg-type"].ToString().ToLower()" role="alert">
+                    @TempData["msg"]
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -1,0 +1,157 @@
+﻿@model Intranet.Models.VeiculoVM
+
+@{ 
+    var repoVeiculo = new Intranet.data.Repositories.VeiculosRepository();
+    var roles = ApplicationContext.Current.Services.MemberService.GetAllRoles().Where(x => x.ToLower().Contains("veiculos"));
+
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+<div class="panel panel-default">
+    <div class="panel-body textRight">
+
+        @if (Model.Id != 0)
+        {
+            using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.ReservaVeiculosSurfaceController>("Excluir", new { Id = Model.Id, pageId = 2431 }))
+            {
+                @Html.HiddenFor(m => m.Id, new { value = "", @class = "form-control" })
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Excluir</button>
+            }
+        }
+        else
+        {
+            <button class="btn btn-primary" onclick="window.location = window.location.href.split('?')[0];">Novo</button>
+        }
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading"> Cadastro de Veículo </div>
+    <div class="panel-body">
+    @using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.VeiculosSurfaceController>("Salvar"))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <div class="form-group col-md-2">
+            @Html.LabelFor(m => m.Id)
+            @Html.TextBoxFor(m => m.Id, new { @readonly=true, placeholder = "Id Veículo", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Id)
+        </div>
+
+        <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.Marca)
+            @Html.TextBoxFor(m => m.Marca, new { placeholder = "Marca", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Marca)
+        </div>
+
+        <div class="form-group col-md-4">
+            @Html.LabelFor(m => m.Modelo)
+            @Html.TextBoxFor(m => m.Modelo, new { placeholder = "Modelo", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Modelo)
+        </div>
+
+        <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.Combustivel)
+            @Html.DropDownListFor(m => m.Combustivel, new SelectList(new List<string>(){ "GASOLINA", "ETANOL", "DIESEL", "GÁS NATURAL (GNV)", "FLEX" }),"-- SELECIONE --", new { placeholder = "Combustível", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Combustivel)
+        </div>
+
+        <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.Cor)
+            @Html.TextBoxFor(m => m.Cor, new { placeholder = "Cor", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Cor)
+        </div>
+
+        <div class="form-group col-md-2">
+            @Html.LabelFor(m => m.Ano)
+            @Html.TextBoxFor(m => m.Ano, new { placeholder = "Ano", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Ano)
+        </div>
+
+        <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.Placa)
+            @Html.TextBoxFor(m => m.Placa, new { placeholder = "Placa", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Placa)
+        </div>
+
+        <div class="form-group col-md-4">
+            @Html.LabelFor(m => m.Chassi)
+            @Html.TextBoxFor(m => m.Chassi, new { placeholder = "Chassi", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Chassi)
+        </div>
+
+        <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.Categoria)
+            @Html.DropDownListFor(m => m.Categoria, new SelectList(new List<string>() { "HATCH", "SEDAN", "VAN", "CUPÊ", "SUV", "PICK-UP", "STATION WAGON", "CONVERSIVEL" }), "-- SELECIONE --", new { placeholder = "Categoria", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Categoria)
+        </div>
+
+        <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.statusVeiculo)
+            @Html.DropDownListFor(m => m.statusVeiculo, EnumHelper.GetSelectList(typeof(Intranet.Models.StatusVeiculo)), "-- SELECIONE --", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.statusVeiculo)
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(m => m.PermissaoReserva)
+            @Html.DropDownList("PermissaoReserva", new SelectList(roles, Model.PermissaoReserva), "SELECIONE", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.PermissaoReserva)
+        </div>
+
+        <div class="col-md-12 textRight">
+            <input type="submit" class="btn btn-primary" value="SALVAR" />
+        </div>
+    }
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Lista de salas</div>
+    <div class="panel-body">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Descrição</th>
+                    <th>Combustível</th>
+                    <th>Placa</th>
+                    <th>Status</th>
+                    <th width="180"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (!repoVeiculo.ListarVeiculos().Any())
+            {
+                    <tr>
+                        <td colspan="4"> Não há salas cadastrados. </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in repoVeiculo.ListarVeiculos())
+                    {
+                        <tr>
+                            <td>@item.Id.ToString("0000")</td>
+                            <td>@item.Descricao</td>
+                            <td>@item.combustivel</td>
+                            <td>@item.placa</td>
+                            <td>@(( Intranet.Models.StatusVeiculo)item.statusVeiculo)</td>
+
+                            <td class="textCenter">
+                                <button onclick="javascript:window.location = '?Id=@item.Id';" class="btn btn-warning btn-xs">ALTERAR</button>
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+</div>

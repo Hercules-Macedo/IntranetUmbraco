@@ -1,0 +1,49 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.FormulariosOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+    var selection = Umbraco.Content(CurrentPage.Id).Children("formularioItem").Where("Visible");
+
+    var query = Request["query"];
+    if (!String.IsNullOrWhiteSpace(query))
+    {
+        selection = Umbraco.TypedSearch(query, true, "").Where(d => d.DocumentTypeAlias == "formularioItem").ToList();
+    }
+
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form action="/documentos/formularios/" method="get">
+            <div class="form-group-sm col-md-10 margin0 padding0">
+                <input type="text" class="form-control" name="query" value="@query" placeholder="Procurar..." />
+            </div>
+            <button class="col-md-2 btn btn-primary btn-sm" type="submit">Procurar</button>
+        </form>
+    </div>
+</div>
+
+<div class='panel panel-default'>
+    <div class="panel-heading"> Lista </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th> Empresa </th>
+                    <th> Tipo </th>
+                    <th> Descrição </th>
+                    <th class="textCenter"> Download </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in selection)
+                {
+                    <tr>
+                        <td>@item.Empresa</td>
+                        <td>@item.Tipo</td>
+                        <td>@item.Descricao</td>
+                        <td class="textCenter"><a target="_blank" href="@item.Documento"> <i class="fa fa-cloud-download" aria-hidden="true"></i> Download </a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</div>

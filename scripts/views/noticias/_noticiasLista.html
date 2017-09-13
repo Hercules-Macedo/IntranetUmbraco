@@ -1,0 +1,19 @@
+﻿<div class='panel panel-default' ng-controller="sescoop.controllers.noticias" ng-init="lista.listarNoticias()">
+    <div class="panel-heading"> <i class="fa fa-newspaper-o" aria-hidden="true"></i> Notícias </div>
+    <div class="panel-body box-widget" style="height: 359px;">
+
+        <div class="list-group lista-noticia">
+            <a ng-repeat="item in itens" class="list-group-item" href="{{ item.Url }}"> <small class="fontSize70">{{ item. CreateDate | date:"dd  'de' MMMM" | uppercase}}</small><br/> <strong> {{ item.TituloNoticia | cut:true: 55:' ...' }} </strong> </a>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        <ul class="pagination pagination-sm margin0" ng-show="pagining.totalRecords > itens.length">
+            <li><a href="#" ng-click="prevPage()">« Anterior</a></li>
+            <li ng-repeat="p in totalPages()" ng-class="{active: p == pagining.pageIndex}"><a href="#" ng-click="changePage(p)">{{ p + 1 }}</a></li>
+            <li><a href="#" ng-click="nextPage()">Próxima »</a></li>
+        </ul>
+    </div>
+</div>
+
+

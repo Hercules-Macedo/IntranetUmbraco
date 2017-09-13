@@ -1,0 +1,58 @@
+﻿@model Intranet.Models.ComunicacaoInterna
+@{
+    Layout = "~/Views/Shared/Relatorios/_relatorio_header.cshtml";
+    ViewBag.Title = "Ficha de Prestação de Contas";
+    ViewBag.Empresa = Model.Empresa;
+}
+
+<div class="container marginT30">
+
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td colspan="3"><h4>Comunicação Interna</h4></td>
+                <td width="300"><h4 class="margin0">Protocolo: @Model.Protocolo</h4></td>
+            </tr>
+            <tr>
+                <td width="150"><strong>De:</strong></td>
+                <td colspan="2">@ViewBag.autor</td>
+                <td rowspan="4" style="vertical-align: middle;" class="text-center"><strong>Data:</strong><h3 class="margin0">@Model.DataCadastro.Value.ToString("dd/MM/yyyy")</h3></td>
+            </tr>
+            <tr>
+                <td width="150"><strong>Empresa:</strong></td>
+                <td colspan="2">@(Model.Empresa ?? "Todos")</td>
+            </tr>
+            <tr>
+                <td width="150"><strong>Area:</strong></td>
+                <td colspan="2">@Model.Area / @(Model.Departamento ?? "Todos")</td>
+            </tr>
+            <tr>
+                <td width="150"><strong>Para:</strong></td>
+                <td colspan="2">@Model.Para</td>
+            </tr>
+            <tr>
+                <td colspan="4"> &nbsp; </td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-center padding10"> <h2>@Model.Assunto</h2> </td>
+            </tr>
+            <tr>
+                <td colspan="4"> @Html.Raw(Model.Descricao) </td>
+            </tr>
+
+            <tr>
+                <td colspan="4" class="text-center"> <p style="margin:0;">________________________________________________________</p> <p>@ViewBag.autor</p> </td>
+            </tr>
+
+            @{
+                var destinatarios = Model.Para.Split(';');
+                foreach (string para in destinatarios)
+                {
+                    <tr>
+                        <td colspan="4" class="text-center"> <p style="margin:0;">________________________________________________________</p> <p>@para.Trim()</p> </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

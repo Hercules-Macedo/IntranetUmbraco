@@ -1,0 +1,17 @@
+﻿@using Intranet.Controllers
+@model Intranet.Models.RecuperarSenhaModel
+
+@using (Html.BeginUmbracoForm<LoginSurfaceController>("ResetPassword", new { Login = Model.Username }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Username)
+        @Html.TextBoxFor(m => m.Username, new { placeholder = "Username", @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Username)
+    </div>
+
+    <button class="btn btn-danger btn-block" name="login" type="submit">Resetar Senha</button>
+}
+

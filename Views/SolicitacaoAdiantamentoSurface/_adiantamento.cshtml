@@ -1,0 +1,322 @@
+﻿@model Intranet.Models.AdiantamentoViagemVM
+@using Intranet.Models;
+@using Intranet.data.Repositories.Base;
+@{
+
+    var centroCustos = new BaseRepository<CentroCustos>().dbContext.Database.Fetch<CentroCustos>(new Umbraco.Core.Persistence.Sql("SELECT * FROM [sisCentroCustos]"));
+    List<string> ccValues = new List<string>();
+    foreach (var c in centroCustos)
+    {
+        ccValues.Add(String.Format("{0} - {1}", c.cod_proc_proj, c.nom_proc_proj));
+    }
+
+    Layout = null;
+    Html.EnableClientValidation(true);
+    Html.EnableUnobtrusiveJavaScript(true);
+}
+
+@using (Html.BeginUmbracoForm<Intranet.Controllers.Surfaces.SolicitacaoAdiantamentoSurfaceController>("Salvar", null, new { id = "form-adiantamento" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Dados Iniciais</div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.localidade)
+                    @Html.TextBoxFor(m => m.localidade, new { @class = "form-control", placeholder = "(exp) São Paulo ..." })
+                    @Html.ValidationMessageFor(m => m.localidade)
+                </div>
+
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.motivo)
+                    @Html.TextBoxFor(m => m.motivo, new { @class = "form-control", placeholder = "(exp) Feira de eventos ..." })
+                    @Html.ValidationMessageFor(m => m.motivo)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.periodoViagemDe)
+                    @Html.TextBox("periodoViagemDe",(Model.periodoViagemDe != null ? Model.periodoViagemDe.Value.ToString("yyyy-MM-dd") : "") , new { type = "date", @class = "form-control date" })
+                    @Html.ValidationMessageFor(m => m.periodoViagemDe)
+                </div>
+
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.periodoViagemAte)
+                    @Html.TextBox("periodoViagemAte", (Model.periodoViagemAte != null ? Model.periodoViagemAte.Value.ToString("yyyy-MM-dd") : ""), new { type = "date", @class = "form-control date" })
+                    @Html.ValidationMessageFor(m => m.periodoViagemAte)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.situacaoFuncionario)
+                    @{ var situacao = new List<string>() { "Funcionário", "Conselheiro", "Colaborador Eventual" }; }
+                    @Html.DropDownListFor(m => m.situacaoFuncionario, new SelectList(situacao), "Selecione o tipo", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.situacaoFuncionario)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Dados de Pagamento</div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.tipoPgto)
+                    @{ var tiposPgto = new List<string>() { /*"DINHEIRO", "CHEQUE",*/ "CONTA CORRENTE", "CONTA POUPANÇA" }; }
+                    @Html.DropDownListFor(m => m.tipoPgto, new SelectList(tiposPgto, Model.tipoPgto), "Selecione o tipo", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.tipoPgto)
+                </div>
+                <div class="form-group col-md-3 conta_corrente">
+                    @Html.LabelFor(m => m.banco)
+                    @Html.TextBoxFor(m => m.banco, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.banco)
+                </div>
+
+                <div class="form-group col-md-3 conta_corrente">
+                    @Html.LabelFor(m => m.agencia)
+                    @Html.TextBoxFor(m => m.agencia, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.agencia)
+                </div>
+
+                <div class="form-group col-md-3 conta_corrente">
+                    @Html.LabelFor(m => m.contaCorrente)
+                    @Html.TextBoxFor(m => m.contaCorrente, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.contaCorrente)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Meio de Transporte</div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.meio)
+                    @{ var meios = new List<string>() { "NÃO UTILIZAREI", "AÉREO", "ONIBUS", "CARRO PRÓPRIO", "CARRO SESCOOP" }; }
+                    @Html.DropDownListFor(m => m.meio, new SelectList(meios, Model.meio), "Selecione o tipo", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.meio)
+                </div>
+                <div class="form-group col-md-3 carro_proprio">
+                    @Html.LabelFor(m => m.qtdKm)
+                    @Html.TextBoxFor(m => m.qtdKm, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.qtdKm)
+                </div>
+                <div class="form-group col-md-3 carro_proprio">
+                    @Html.LabelFor(m => m.valorUntKm)
+                    @Html.TextBoxFor(m => m.valorUntKm, new { @readonly = "readonly", @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.valorUntKm)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.valorTotalKm)
+                    @Html.TextBoxFor(m => m.valorTotalKm, new { @readonly = "readonly", @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.valorTotalKm)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Hospedagem</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.qtdDiarias)
+                    @Html.TextBoxFor(m => m.qtdDiarias, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.qtdDiarias)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.valorUntDiaria)
+                    @Html.TextBoxFor(m => m.valorUntDiaria, new { @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.valorUntDiaria)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.valorTotalDiaria)
+                    @Html.TextBoxFor(m => m.valorTotalDiaria, new { @readonly = "readonly", @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.valorTotalDiaria)
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.comentariosDiarias)
+                    @Html.TextAreaFor(m => m.comentariosDiarias, new { rows = "3", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.comentariosDiarias)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Refeições</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.qtdRefeicao)
+                    @Html.TextBoxFor(m => m.qtdRefeicao, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.qtdRefeicao)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.valorUntRefeicao)
+                    @Html.TextBoxFor(m => m.valorUntRefeicao, new { @readonly = "readonly", @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.valorUntRefeicao)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.LabelFor(m => m.valorTotalRefeicao)
+                    @Html.TextBoxFor(m => m.valorTotalRefeicao, new { @readonly = "readonly", @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.valorTotalRefeicao)
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.comentariosRefeicao)
+                    @Html.TextAreaFor(m => m.comentariosRefeicao, new { rows = "3", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.comentariosRefeicao)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Outras Despesas</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.outros)
+                    @Html.TextBoxFor(m => m.outros, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.outros)
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.outrosValor)
+                    @Html.TextBoxFor(m => m.outrosValor, new { @class = "form-control money" })
+                    @Html.ValidationMessageFor(m => m.outrosValor)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Outras Despesas</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.CentroCustoEmpresa)
+                    @Html.DropDownListFor(m => m.CentroCustoEmpresa, new SelectList(new List<string>() { "SESCOOP/SP", "OCESP", "FESCOOP" }, Model.CentroCustoEmpresa), "TODOS", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.CentroCustoEmpresa)
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(m => m.CentroCusto)
+                    @Html.DropDownListFor(m => m.CentroCusto, new SelectList(ccValues, Model.CentroCusto), "SELECIONE", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CentroCusto)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <button type="submit" class="btn btn-primary col-md-1 col-md-offset-11">Salvar</button>
+        </div>
+    </div>
+                        }
+
+<script type="text/javascript">
+    window.onload = function () {
+
+        var Req = {
+            required: true,
+            messages: {
+                required: jQuery.validator.format("Preencha o campo acima."),
+            }
+        };
+
+        var form = $("#form-adiantamento");
+
+        var update = function () {
+
+            if ($("#tipoPgto").val() == 'CONTA CORRENTE' || $("#tipoPgto").val() == 'CONTA POUPANÇA') {
+                $('#banco').rules('add', Req);
+                $('#agencia').rules('add', Req);
+                $('#contaCorrente').rules('add', Req);
+
+                $('.conta_corrente').fadeIn();
+            } else {
+                $('#banco').rules('remove');
+                $('#agencia').rules('remove');
+                $('#contaCorrente').rules('remove');
+
+                $('[data-valmsg-for="banco"]').text('');
+                $('[data-valmsg-for="agencia"]').text('');
+                $('[data-valmsg-for="contaCorrente"]').text('');
+
+                $('.conta_corrente').fadeOut();
+            }
+
+            if ($('#meio').val() == 'CARRO PRÓRIO') {
+                $('#qtdKm').rules('add', Req);
+                $('#valorUntKm').rules('add', Req);
+                $('#valorTotalKm').rules('add', Req);
+                $('#valorTotalKm').prop('readonly', 'readonly');
+                $('.carro_proprio').fadeIn();
+            } else {
+                $('#qtdKm').rules('remove');
+                $('#valorUntKm').rules('remove');
+                //$('#valorTotalKm').rules('remove');
+                $('#valorTotalKm').removeProp('readonly');
+
+                $('[data-valmsg-for="qtdKm"]').text('');
+                $('[data-valmsg-for="valorUntKm"]').text('');
+                $('[data-valmsg-for="valorTotalKm"]').text('');
+
+                $('.carro_proprio').fadeOut();
+            }
+
+            var x, y = 0;
+
+            x = $('#qtdDiarias').val();
+            y = $('#valorUntDiaria').val().replace('.', '').replace(',', '.');
+            $('#valorTotalDiaria').val($('.money').masked((x * y).toFixed(2).toString().replace().replace('.', ',')));
+
+            x = $('#qtdRefeicao').val();
+            y = $('#valorUntRefeicao').val().replace(',', '.');
+            $('#valorTotalRefeicao').val($('.money').masked((x * y).toFixed(2).toString().replace().replace('.', ',')));
+
+            x = $('#qtdKm').val();
+            y = $('#valorUntKm').val().replace(',', '.');
+            $('#valorTotalKm').val('0,00');
+            $('#valorTotalKm').val($('.money').masked((x * y).toFixed(2).toString().replace().replace('.', ',')));
+        };
+        update();
+
+        $('.avoidToChange').keyup(function () {
+            return false;
+        });
+
+        $('#tipoPgto').change(function () {
+            update();
+        });
+
+        $('#meio').change(function () {
+            update();
+        });
+
+        $('#qtdDiarias, #valorUntDiaria').blur(function () {
+            update();
+        });
+
+        $('#qtdRefeicao').blur(function () {
+            update();
+        });
+
+        $('#qtdKm').blur(function () {
+            update();
+        });
+
+    };
+</script>

@@ -1,0 +1,52 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.CertificadosOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@using System.Linq;
+@{
+    Layout = "Master.cshtml";
+    var cursos = Umbraco.Content(CurrentPage.Id).Children.Where("Visible").OrderBy("CreateDate desc");
+}
+
+@if (!string.IsNullOrEmpty(Request.QueryString["search"]))
+{
+
+    //var itens = Model.Content.Descendants().Where(m => m.GetPropertyValue<string>("treinamento").Contains(Request.QueryString["search"])).ToList();
+    var itens = Model.Content.Children<ContentModels.CertificadoItem>()
+        .Where(m=>
+            m.GetPropertyValue<string>("treinamento").IndexOf(Request.QueryString["search"], StringComparison.OrdinalIgnoreCase) >= 0 ||
+            m.GetPropertyValue<string>("instrutor").IndexOf(Request.QueryString["search"], StringComparison.OrdinalIgnoreCase) >= 0 ||
+            m.GetPropertyValue<string>("cidade").IndexOf(Request.QueryString["search"], StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+	
+    foreach (var result in itens)
+    {
+        <a href="@result.Url">@result.Url</a><br/>
+    }
+}
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th> Nome </th>
+                <th> Período </th>
+                <th width="100"> &nbsp; </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (!cursos.Any())
+            {
+                <tr>
+                    <td colspan="2">Não foram encontrados Cursos.</td>
+                </tr>
+            }
+
+            @foreach (var curso in cursos)
+            {
+                <tr>
+                    <td>@curso.treinamento</td>
+                    <td>@curso.periodo</td>
+                    <td><a class="btn btn-primary btn-xs" href="@curso.Url"> Participantes </a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

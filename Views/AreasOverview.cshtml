@@ -1,0 +1,39 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.AreasOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+    var areas = Umbraco.Content(CurrentPage.Id).Children.Where("Visible").OrderBy("Name");
+}
+
+
+
+<div class="row">
+    @foreach (var area in areas)
+    {
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                @{
+                    var nucleos = area.Children.Where("Visible").OrderBy("Name");
+                    var responsavel = Members.GetById(area.responsavel);
+                }
+                <div class="panel-heading"> <i class="fa fa-user-circle-o" data-toggle="tooltip" data-placement="top" title="@responsavel.Name" aria-hidden="true"></i> @area.Name </div>
+                @if (nucleos.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var nucleo in nucleos)
+                        {
+                            responsavel = Members.GetById(nucleo.responsavel);
+                            <a class="list-group-item" href="#" data-toggle="tooltip" data-placement="top" title="@responsavel.Name"> @nucleo.Name </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group">
+                        <div class="list-group-item">Nenhum núcleo encontrado</div>
+                    </div>
+                }
+            </div>
+        </div>
+                    }
+</div>

@@ -1,0 +1,176 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Intranet.Models 
+@{
+
+    var veiculosRepo = new Intranet.data.Repositories.VeiculosRepository();
+    var reservasRepo = new Intranet.data.Repositories.VeiculosReservaRepository();
+
+    var mes = DateTime.Now.Month;
+    var ano = DateTime.Now.Year;
+
+    string qMes = Request.QueryString["mes"];
+    string qAno = Request.QueryString["ano"];
+    if (qMes != null && qAno != null)
+    {
+        mes = Int32.Parse(qMes);
+        ano = Int32.Parse(qAno);
+    }
+
+    Layout = "ReservaVeiculosMaster.cshtml";
+    ViewBag.activeTab = 0;
+    ViewBag.title = "Minhas Reservas";
+    ViewBag.subtitle = "Reservas de veículos para o Mês de " + HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(mes).ToString().ToFirstUpper();
+
+    var ListaVeiculoAtivas = veiculosRepo.ListarVeiculos().Where(s => (int)s.statusVeiculo == (int)StatusVeiculo.ATIVO ).ToList();
+    var reservasNoMes = reservasRepo.ListarPorMes(mes, ano,
+        new int[]{
+            (int)Intranet.Models.StatusVeiculoReserva.CONFIRMADO,
+            (int)Intranet.Models.StatusVeiculoReserva.ANDAMENTO
+        });
+}
+
+@{ Html.RenderPartial("ReservaSalas/_filtros", new String[] { "ano", "mes" }); }
+
+<ul class="list-group">
+    @foreach (var item in ListaVeiculoAtivas)
+    {
+        if (Roles.IsUserInRole(item.permissao_reserva))
+        {
+        <li class="list-group-item"> <i class="fa fa-car marginR10" aria-hidden="true"></i> <strong> @item.Descricao / @item.placa </strong> </li>
+        <li class="list-group-item padding5 marginB20 div-dias">
+            @for (int i = 1; i <= DateTime.DaysInMonth(ano, mes); i++)
+            {
+                DateTime data = new DateTime(ano, mes, i);
+                var temReserva = reservasNoMes.Where(r => (data >= r.reservaDe.Value.Date && data <= r.reservaAte.Value.Date) && r.VeiculoId == item.Id);
+                var tooltipString = String.Format("{0}, {1} de {2} de {3}", data.ToString("dddd", HTMLHelpers.cultureInfo()).ToFirstUpper(), i, HTMLHelpers.cultureInfo().DateTimeFormat.GetMonthName(mes).ToString().ToFirstUpper(), ano);
+                if (data < DateTime.Today.Date)
+                {
+                    <div class="item disable text-center" data-toggle="tooltip" data-placement="top" title="@tooltipString - Não é possivel reservar data retroativa."> @i.ToString("00")<br /><i class="fa fa-car" aria-hidden="true"></i></div>
+                }
+                else if (temReserva.Any())
+                {
+                    <div class="item reservado text-center" data-toggle="tooltip" ng-click='ModalVeiculoReservar(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(new { Id = item.Id, Descricao = item.Descricao, Data = data, Reservas = temReserva.ToList() })) )' data-placement="top" title="@tooltipString"> @i.ToString("00")<br /><i class="fa fa-car" aria-hidden="true"></i> </div>
+                    @*<div class="item reservado text-center" ng-click="ModalVeiculoReservaVisualizar('@item.Descricao','@(temReserva.FirstOrDefault().LoginName)')" data-toggle="tooltip" data-placement="top" title="@tooltipString">@i.ToString("00")<br /><i class="fa fa-car" aria-hidden="true"></i></div>*@
+                }
+                else
+                {
+                    <div class="item disponivel text-center" data-toggle="tooltip" ng-click='ModalVeiculoReservar(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(new { Id = item.Id, Descricao = item.Descricao, Data = data })) )' data-placement="top" title="@tooltipString"> @i.ToString("00")<br /><i class="fa fa-car" aria-hidden="true"></i> </div>
+                }
+
+            }
+        </li>
+        }
+    }
+</ul>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">Filtros da Pesquisa</div>
+    <div class="panel-body" ng-init="MinhasReservas.lista.Pesquisar();">
+        <input type="hidden" ng-model="MinhasReservas.lista.model.MemberId" ng-init="MinhasReservas.lista.model.MemberId = @Members.GetCurrentMemberId();" />
+        <div class="row">
+            
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="MinhasReservas.lista.model.ReservaId" class="form-control" id="txtReservaId" placeholder="Id">
+            </div>
+            
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="MinhasReservas.lista.model.placa" class="form-control" id="txtPlaca" placeholder="Placa">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="MinhasReservas.lista.model.modelo" class="form-control" id="txtModelo" placeholder="Modelo">
+            </div>
+            
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="text" ng-model="MinhasReservas.lista.model.marca" class="form-control" id="txtMarca" placeholder="Marca">
+            </div>
+            
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="MinhasReservas.lista.model.reservaDe" class="form-control" id="txtDe" placeholder="De">
+            </div>
+            
+            <div class="form-group-sm col-md-3 marginT10">
+                <input type="date" ng-model="MinhasReservas.lista.model.reservaAte" class="form-control" id="txtAte" placeholder="Até">
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <select ng-model="MinhasReservas.lista.model.statusReserva" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="1">CONFIRMADA</option>
+                    <option value="2">ANDAMENTO</option>
+                    <option value="3">CANCELADA</option>
+                    <option value="4">CONCLUIDA</option>
+                </select>
+            </div>
+
+            <div class="form-group-sm col-md-3 marginT10">
+                <button class="btn btn-primary btn-block btn-sm" ng-click="MinhasReservas.lista.pag.currentPage=1;MinhasReservas.lista.Pesquisar();">PESQUISAR</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Minhas Reservas</div>
+    <div class="panel-body">
+
+        <div class="row">
+            <label class="control-label col-md-offset-3 col-md-2" style="margin-top:5px;" for="txtStatus">Itens por página:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="MinhasReservas.lista.pag.pageSize" class="form-control" ng-options="obj as obj for obj in [10,20,50,100]" ng-change="MinhasReservas.lista.pag.currentPage=1;MinhasReservas.lista.Pesquisar();"></select>
+            </div>
+            <label class="col-md-1" style="margin-top:5px;" for="txtStatus">Ordem:</label>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="MinhasReservas.lista.pag.orderBy" class="form-control" ng-options="obj.value as obj.text for obj in [{value:'R.Id', text:'Id'}, {value:'R.statusReserva', text:'Status'},{value:'R.reservaDe', text:'De'},{value:'R.reservaAte', text:'Até'}]" ng-change="MinhasReservas.lista.pag.currentPage=1;MinhasReservas.lista.Pesquisar();"></select>
+            </div>
+            <div class="form-group-sm col-md-2 marginB10">
+                <select ng-model="MinhasReservas.lista.pag.orderDirection" class="form-control" ng-options="obj.value as obj.text for obj in [{value:0, text:'CRESCENTE'}, {value:1, text:'DECRESCEN.'}]" ng-change="MinhasReservas.lista.pag.currentPage=1;MinhasReservas.lista.Pesquisar();"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <table id="grid-selection" class="table table-condensed table-hover table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-column-id="Id" data-type="numeric" width="30" data-identifier="true">ID</th>
+                            <th data-column-id="Veiculo">Veiculo</th>
+                            <th data-column-id="Placa">Placa</th>
+                            <th data-column-id="ReservaDe" data-order="desc" data-converter="datetime">De</th>
+                            <th data-column-id="ReservaAte" data-order="desc" data-converter="datetime">Até</th>
+                            <th data-column-id="Status" data-formatter="link" data-sortable="false">Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-hide="MinhasReservas.lista.data.length">
+                            <td class="padding20" colspan="7">Nenhum item encontrado.</td>
+                        </tr>
+                        <tr ng-repeat="item in MinhasReservas.lista.data">
+                            <td>{{item.ReservaId | zeropadding:4}}</td>
+                            <td>{{ item.marca }} {{ item.modelo }} {{ item.ano }}</td>
+                            <td>{{ item.placa }}</td>
+                            <td>{{item.reservaDe | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                            <td>{{item.reservaAte | date:'dd/MM/yyyy H:mm': 'UTC'}}</td>
+                            <td>{{item.statusReserva | EnumStatusSalaReserva }}</td>
+                            <td class="textCenter">
+                                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Cancelar" ng-click="ModalVeiculoCancelar(item)" ng-show="ShowCancelar(item)"><i class="fa fa-times-circle" aria-hidden="true"></i></button>
+                                <a class="btn btn-primary btn-xs" target="_blank" href="/umbraco/surface/Relatorios/FichaReserva/{{item.ReservaId}}" ng-show="ShowCancelar(item)"><i class="fa fa-print" aria-hidden="true"></i></a>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- pager -->
+                <pagination changing="MinhasReservas.lista.Pesquisar();" pagining="MinhasReservas.lista.pag"></pagination>
+                <!-- pager -->
+
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,15 @@
+﻿<div class='panel panel-default' ng-controller="sescoop.controllers.noticias" ng-init="lista.listarUltimasNoticias(10)">
+    <div class="panel-heading"> <i class="fa fa-newspaper-o" aria-hidden="true"></i> Últimas Notícias </div>
+    <div class="panel-body" style="overflow:auto;">
+
+        <div class="list-group lista-noticia">
+            <a ng-repeat="item in itens" class="list-group-item" href="{{ item.Url }}"> <small class="fontSize70">{{ item. CreateDate | date:"dd  'de' MMMM" | uppercase}}</small><br/> <strong> {{ item.TituloNoticia | cut:true: 40:' ...' }} </strong> </a>
+        </div>
+
+    </div>
+    <div class="panel-footer textRight">
+        <a href="/publicacoes/noticias/" class="btn btn-primary btn-sm"> Mais notícias </a>
+    </div>
+</div>
+
+

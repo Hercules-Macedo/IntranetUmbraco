@@ -1,0 +1,132 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.FornecedoresOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = "Master.cshtml";
+    var selection = Umbraco.Content(CurrentPage.Id).Children().Where("Visible");
+    // var selection = Umbraco.TypedSearch(Request["q"]??"ba", true, "").Where(d => d.DocumentTypeAlias == "fornecedorItem").ToList();
+
+    foreach (var item in selection)
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">@item.razaoSocial</div>
+            <!-- <div class="panel-body">-->
+
+                <table class="table table-bordered margin0">
+
+                    <tr>
+                        <td colspan="4"><h4>Dados Principais</h4></td>
+                    </tr>
+
+                    <tr>
+                        <th width="160">Razão Social</th>
+                        <td colspan="3">@item.razaoSocial</td>
+                    </tr>
+
+                    <tr>
+                        <th>Nome Fantasia</th>
+                        <td>@item.nomeFantasia</td>
+
+                        <th width="160">CNPJ</th>
+                        <td>@item.CNPJ</td>
+                    </tr>
+
+                    <tr>
+                        <th>Inscrição Municipal</th>
+                        <td>@item.inscricaoMunicipal</td>
+
+                        <th>Inscrição Estadual</th>
+                        <td>@item.inscricaoEstadual</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4"><h4>Localização</h4></td>
+                    </tr>
+
+                    <tr>
+                        <th>Endereço</th>
+                        <td colspan="3">@item.endereco</td>
+                    </tr>
+
+                    <tr>
+                        <th>Bairro</th>
+                        <td>@item.bairro</td>
+
+                        <th>CEP</th>
+                        <td>@item.CEP</td>
+                    </tr>
+
+                    <tr>
+                        <th>UF</th>
+                        <td>@item.UF</td>
+
+                        <th>Cidade</th>
+                        <td>@item.cidade</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4"><h4>Dados de Contato</h4></td>
+                    </tr>
+
+                    <tr>
+                        <th>Site</th>
+                        <td>@item.siteDaEmpresa</td>
+
+                        <th>E-Mail</th>
+                        <td>@item.eMailDaEmpresa</td>
+                    </tr>
+
+                    <tr>
+                        <th>Telefone</th>
+                        <td colspan="3">@item.telefone</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4"><h4>Pessoa de Contato</h4></td>
+                    </tr>
+
+                    <tr>
+                        <th>Nome</th>
+                        <td colspan="3">@item.nome</td>
+                    </tr>
+
+                    <tr>
+                        <th>Cargo</th>
+                        <td>@item.cargo</td>
+
+                        <th>Email</th>
+                        <td>@item.eMail</td>
+                    </tr>
+                    <tr>
+                        <th>Telefone</th>
+                        <td>@item.telefonePessoal</td>
+
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4"><h4>Dados Bancários</h4></td>
+                    </tr>
+
+                    <tr>
+                        <th>Banco</th>
+                        <td>@item.banco</td>
+
+                        <th>Agência</th>
+                        <td>@item.agencia</td>
+                    </tr>
+
+                    <tr>
+                        <th>Conta</th>
+                        <td>@item.contaCorrente</td>
+
+                        <th>&nbsp;</th>
+                        <td>&nbsp;</td>
+                    </tr>
+
+                </table>
+            <!-- </div> -->
+        </div>
+    }
+
+}

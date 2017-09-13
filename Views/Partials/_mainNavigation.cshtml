@@ -1,0 +1,148 @@
+﻿@inherits UmbracoTemplatePage
+@using Intranet.App_Start;
+@{
+    var homePage = CurrentPage.AncestorsOrSelf(1).First();
+    var menuItems = homePage.Children.Where("umbracoNaviHide == false && (loginRequirido == " + Members.IsLoggedIn() + " || loginRequirido == false)").ToList();
+    var root = CurrentPage.AncestorOrSelf(1);
+
+    var loginsAgregadosMembersData = String.Empty;
+    var loginsAgregadosMembers = new List<IMember>();
+    if (Session["sisLoginAgregado"] != null)
+    {
+        loginsAgregadosMembers = (List<IMember>)Session["sisLoginAgregado"];
+        loginsAgregadosMembersData = Newtonsoft.Json.JsonConvert.SerializeObject(loginsAgregadosMembers.Select(x =>
+        new {
+            Username = x.Username,
+            Name = x.Name,
+            cargo = x.Properties.Where(p => p.Alias=="cargo").FirstOrDefault().Value,
+            pic ="" /*x.Properties.Where(p => p.Alias == "pic").FirstOrDefault().Value*/ })
+         );
+    }
+
+}
+<!-- Nav-->
+<nav class="navbar navbar-default" id="primary-nav">
+    <div class="container">
+        <a class="navbar-brand visible-lg-inline" href="~/">
+            <img class="nav-logo" src="~/media/images/logo-sistema-ocesp-50.png" />
+        </a>
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="visible-lg-block" href="~/">Home</a>
+                <a class="hidden-lg" href="~/"><i class="fa fa-home fa-2x" aria-hidden="true"></i></a>
+            </li>
+
+            @foreach (var item in menuItems)
+            {
+                var subMenuItems = item.Children.Where("umbracoNaviHide == false && (loginRequirido == " + Members.IsLoggedIn() + " || loginRequirido == false) ");
+                if (subMenuItems.Count() > 0)
+                {
+                    <li class="dropdown  @(CurrentPage.Id == item.Id ? "current" : null)">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="@item.Url">@item.titulo <i class="fa fa-caret-down"></i></a>
+                        <ul class="dropdown-menu">
+                            @foreach (var sub in subMenuItems)
+                            {
+                                <li><a href="@sub.Url">@sub.titulo</a></li>
+                            }
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="@(CurrentPage.Id == item.Id ? "current" : null)">
+                        <a href="@item.Url">@item.titulo</a>
+                    </li>
+                }
+            }
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+
+            @if (!Members.IsLoggedIn())
+            {
+                <li>
+                    <a href="~/Login"> <i class="fa fa-lock fa-lg marginR10" aria-hidden="true"></i> Login <span class="sr-only">(current)</span></a>
+                </li>
+            }
+            else
+            {
+                var mymember = Members.GetCurrentMember();
+
+                if (mymember == null)
+                {
+                    Members.Logout();
+                    Response.Redirect("~/");
+                }
+
+                var profileImage = mymember.GetCropUrl("pic", "Profile");
+                if (String.IsNullOrWhiteSpace(profileImage))
+                {
+                    profileImage = "/media/images/user.png";
+                }
+
+
+                <li class="dropdown no-padding login-area">
+                    <a href="#" class="dropdown-toggle login-area" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <img class="img-circle" src='@profileImage' width="32" height="32" />
+                        <span class="visible-lg-inline">@mymember.Name </span>
+                        <span class="caret"></span>
+                    </a>
+
+                    <i style="display:none;" ng-controller="HomeCtrl" ng-click="colorir();" class="fa fa-paint-brush btn-colorir" aria-hidden="true"></i>
+                    <ul class="dropdown-menu">
+                        <li><a href="~/Login">Perfil</a></li>
+                        @if (loginsAgregadosMembers.Any()) {
+                            <li><a href="#" ng-controller="HomeCtrl" ng-click='LoginsAgregados(@Html.Raw(loginsAgregadosMembersData))'>Logins Agregados</a></li>
+                        }
+                        <li><a href="@Url.Action("Logout", "LoginSurface")">Logout <!-- @*Members.GetCurrentMemberProfileModel().GetType().ToString()*@--> </a></li>
+                    </ul>
+                </li>
+            }
+
+        </ul>
+    </div>
+</nav>
+
+@if (loginsAgregadosMembers.Any())
+{
+    <div ng-controller="HomeCtrl">
+    @using (Html.BeginUmbracoForm<Intranet.Controllers.LoginSurfaceController>("LoginAgregado", null, new { id = "form-login-agregado" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.Hidden("login")
+
+        <div class="modal fade" id="modal-login-agragado" tabindex="-1" role="dialog" aria-labelledby="modal-login-agragado-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="modal-login-agragado-label">Alternar entre usuários</h4>
+                            </div>
+                            <div class="modal-body" style="background:#EEE;">
+                                <div class="list-group">
+                                    <a ng-click="LoginAgregadoSelecionar(item, this)" ng-class="{'active': item.Username == loginSelecionado.Username}" class="list-group-item" href="#" ng-repeat="item in usuariosAgregados">
+                                        <img src="{{ item.pic.src }}" width="32" height="32" class="img-circle marginR10" />
+                                        {{ item.Name }} / <span class="small">{{ item.cargo }}</span>
+                                    </a>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-12">
+                                        <label>Senha</label>
+                                        <input type="password" ng-model="senha" name="senha" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+}

@@ -1,0 +1,65 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.NormasOverview>
+@using ContentModels = Umbraco.Web.PublishedContentModels; 
+
+@{
+    Layout = "Master.cshtml";
+
+    var query = Request["query"] ?? "";
+    var empresa = Request["empresa"] ?? "";
+
+
+    var selection = Model.Content.Children.Where(d => d.DocumentTypeAlias == "normaItem").ToList();
+
+    selection = selection.Where(d => d.GetPropertyValue<String>("DescricaoDaNorma").ToLower().Contains(query.ToLower())).ToList();
+    selection = selection.Where(d => d.GetPropertyValue<String>("Empresa").ToLower().Contains(empresa.ToLower())).ToList();
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form action="@CurrentPage.Url" method="get" class="container-fluid">
+            <div class="row">
+                <div class="form-group-sm col-md-2">
+                    <select id="empresa" name="empresa" class="form-control">
+                        <option value=""> -- TODOS -- </option>
+                        <option @(empresa == "SESCOOP/SP" ? "selected":"") value="SESCOOP/SP">SESCOOP/SP</option>
+                        <option @(empresa == "SESCOOP/NACIONAL" ? "selected":"") value="SESCOOP/NACIONAL">SESCOOP/NACIONAL</option>
+                        <option @(empresa == "CONDOMÍNIO" ? "selected":"") value="CONDOMÍNIO">CONDOMÍNIO</option>
+                    </select>
+                </div>
+                <div class="form-group-sm col-md-8">
+                    <input type="text" class="form-control" name="query" value="@query" placeholder="Procurar..." />
+                </div>
+                <button class="col-md-2 btn btn-primary btn-sm" type="submit">Procurar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class='panel panel-default'>
+    <div class="panel-heading"> Resoluções encontradas </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th> Empresa </th>
+                    <th> Tipo </th>
+					<th> Número </th>
+                    <th> Revisão </th>
+					<th> Descrição </th>
+                    <th class="textCenter"> Download </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in selection)
+                {
+                    <tr>
+                        <td>@(item.GetPropertyValue<string>("Empresa")) </td>
+                        <td>@(item.GetPropertyValue<string>("TipoDeNorma"))</td>
+                        <td>@(item.GetPropertyValue<string>("NumeroDoProcesso"))</td>
+						<td>@(item.GetPropertyValue<DateTime>("DataDeRevisao").ToString("dd/MM/yyyy"))</td>
+                        <td>@(item.GetPropertyValue<string>("DescricaoDaNorma"))</td>
+                        <td class="textCenter"><a target="_blank" href="@(item.GetPropertyValue<string>("Documento"))"> <i class="fa fa-cloud-download" aria-hidden="true"></i> Download </a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</div>
